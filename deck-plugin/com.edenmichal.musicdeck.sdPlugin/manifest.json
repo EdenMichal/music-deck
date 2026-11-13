@@ -1,0 +1,346 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Name": "Music Deck",
+  "Version": "0.11.0.0",
+  "Author": "EdenMichal",
+  "Description": "Crossfade two music decks, switch track cues, ride the ambient level and fire SFX in Foundry VTT from your Stream Deck+.",
+  "UUID": "com.edenmichal.musicdeck",
+  "URL": "https://github.com/EdenMichal/music-deck",
+  "Category": "Music Deck",
+  "CategoryIcon": "imgs/plugin/category",
+  "Icon": "imgs/plugin/icon",
+  "CodePath": "bin/plugin.js",
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Nodejs": {
+    "Version": "24"
+  },
+  "Actions": [
+    {
+      "Name": "Music Dial",
+      "UUID": "com.edenmichal.musicdeck.music",
+      "Icon": "imgs/actions/music-list",
+      "Tooltip": "Turn: crossfade A↔B (or music volume). Press: mute. Hold and turn: switch mode. Tap the strip: fade to the other deck. Hold the strip: next track. During combat it works the Battle deck: turn sets its level, tap skips its track.",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/strip.json",
+        "Icon": "imgs/actions/music-dial",
+        "StackColor": "#6fb1e8",
+        "TriggerDescription": {
+          "Rotate": "Crossfade / music volume",
+          "Push": "Mute · hold + turn: switch mode",
+          "Touch": "Fade to other deck",
+          "LongTouch": "Next track"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/music-dial"
+        }
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false
+    },
+    {
+      "Name": "Ambient Dial",
+      "UUID": "com.edenmichal.musicdeck.ambient",
+      "Icon": "imgs/actions/ambient-list",
+      "Tooltip": "Turn: the level on the strip, Ambient or one scene's. Press: step through the scenes playing, then back to Ambient. Hold: mute. Tap the strip: pause or bring back the layers.",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/strip.json",
+        "Icon": "imgs/actions/ambient-dial",
+        "StackColor": "#7cc79a",
+        "TriggerDescription": {
+          "Rotate": "Ambient or scene level",
+          "Push": "Next scene · hold: mute",
+          "Touch": "Pause / play layers"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/ambient-dial"
+        }
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false
+    },
+    {
+      "Name": "Scene Mix Dial",
+      "UUID": "com.edenmichal.musicdeck.scenemix",
+      "Icon": "imgs/actions/ambient-list",
+      "Tooltip": "Mix stacked sound scenes. Turn: the level of the scene shown on the strip. Press or tap the strip: the next scene that's playing.",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/strip.json",
+        "Icon": "imgs/actions/ambient-dial",
+        "StackColor": "#7cc79a",
+        "TriggerDescription": {
+          "Rotate": "Scene level",
+          "Push": "Next playing scene",
+          "Touch": "Next playing scene"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/ambient-dial"
+        }
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false
+    },
+    {
+      "Name": "SFX Dial",
+      "UUID": "com.edenmichal.musicdeck.sfxdial",
+      "Icon": "imgs/actions/sfx-dial-list",
+      "Tooltip": "Turn: SFX volume. Press: mute. Tap the strip: stop any SFX that's playing.",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/strip.json",
+        "Icon": "imgs/actions/sfx-dial",
+        "StackColor": "#e0a65a",
+        "TriggerDescription": {
+          "Rotate": "SFX volume",
+          "Push": "Mute",
+          "Touch": "Stop SFX"
+        }
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/sfx-dial"
+        }
+      ],
+      "UserTitleEnabled": false,
+      "SupportedInMultiActions": false
+    },
+    {
+      "Name": "SFX Pad",
+      "UUID": "com.edenmichal.musicdeck.sfx",
+      "Icon": "imgs/actions/sfx-list",
+      "Tooltip": "Plays a sound from your Music Deck – SFX playlist for everyone.",
+      "PropertyInspectorPath": "ui/sfx-pad.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/sfx",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ]
+    },
+    {
+      "Name": "Auto-fade",
+      "UUID": "com.edenmichal.musicdeck.autofade",
+      "Icon": "imgs/actions/autofade-list",
+      "Tooltip": "Crossfades to the other deck over the crossfade time set in Foundry (4 s unless you change it).",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/autofade",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ]
+    },
+    {
+      "Name": "Panic",
+      "UUID": "com.edenmichal.musicdeck.panic",
+      "Icon": "imgs/actions/panic-list",
+      "Tooltip": "Fades every Music Deck sound to silence for everyone. Press again to bring it back.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/panic",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/panic-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Next Track",
+      "UUID": "com.edenmichal.musicdeck.next",
+      "Icon": "imgs/actions/next-list",
+      "Tooltip": "Skips to the next track on the deck you're hearing, or on the deck you pick.",
+      "PropertyInspectorPath": "ui/deck-next.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/next",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ]
+    },
+    {
+      "Name": "Set Track",
+      "UUID": "com.edenmichal.musicdeck.track",
+      "Icon": "imgs/actions/track-list",
+      "Tooltip": "Fades the deck that's playing (the Battle deck during a battle) to one track from your Library, adding it to that deck's queue. Lights while that track plays.",
+      "PropertyInspectorPath": "ui/set-track.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/track",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/track-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Ambient Layer",
+      "UUID": "com.edenmichal.musicdeck.layer",
+      "Icon": "imgs/actions/layer-list",
+      "Tooltip": "Switches one ambient layer (campfire, rain…) on or off with a fade. Lights up while it plays.",
+      "PropertyInspectorPath": "ui/ambient-layer.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/layer",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/layer-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Sound Scene",
+      "UUID": "com.edenmichal.musicdeck.scene",
+      "Icon": "imgs/actions/scene-list",
+      "Tooltip": "Press: fade Foundry's ambient layers to a sound scene. Hold: add the scene on top of what's playing (hold again to fade just that scene out). Put it in a Multi Action with a Philips Hue Set Scene so one key sets lights and sound.",
+      "PropertyInspectorPath": "ui/sound-scene.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/scene",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/scene-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Scene Combo",
+      "UUID": "com.edenmichal.musicdeck.combo",
+      "Icon": "imgs/actions/combo-list",
+      "Tooltip": "Press: play two or more sound scenes together, fading out every other scene and the General layers. Press again while just those scenes play to fade them out. Lights while all of them play. Put it in a Multi Action with a Philips Hue Set Scene so one key sets lights and sound.",
+      "PropertyInspectorPath": "ui/scene-combo.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/combo",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/combo-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Go to Cue",
+      "UUID": "com.edenmichal.musicdeck.cue",
+      "Icon": "imgs/actions/cue-list",
+      "Tooltip": "Switches the track you're hearing to one of its cues (a pad number or a name) at the end of the loop. Hold: now. Lights while that cue plays.",
+      "PropertyInspectorPath": "ui/go-to-cue.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/cue",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/cue-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    },
+    {
+      "Name": "Next Phase",
+      "UUID": "com.edenmichal.musicdeck.phase",
+      "Icon": "imgs/actions/phase-list",
+      "Tooltip": "Combat: moves the battle track you're hearing to its next phase at the end of the loop. Blinks while the switch waits.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/phase",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        },
+        {
+          "Image": "imgs/actions/phase-on",
+          "TitleAlignment": "bottom",
+          "FontSize": 11
+        }
+      ],
+      "DisableAutomaticStates": true
+    }
+  ]
+}

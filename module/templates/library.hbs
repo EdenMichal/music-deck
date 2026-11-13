@@ -1,0 +1,14 @@
+<section class="md-view md-library-head" {{#if hidden}}hidden{{/if}}>
+  <div class="md-folders md-seg" role="group" aria-label="Library source">
+    {{#each sources}}<button type="button" class="{{#if active}}on{{/if}}" data-action="mdSource" data-source="{{id}}" aria-pressed="{{#if active}}true{{else}}false{{/if}}">{{label}}</button>{{/each}}
+  </div>
+  <nav class="md-crumbs" aria-label="Folder">
+    {{#each crumbs}}{{#if last}}<span class="md-crumb here">{{label}}</span>{{else}}<button type="button" class="md-crumb" data-action="mdCrumb" data-node="{{id}}">{{label}}</button><i class="md-crumb-sep fa-solid fa-chevron-right" aria-hidden="true"></i>{{/if}}{{/each}}
+  </nav>
+  <input type="search" name="md-search" class="md-search" value="{{query}}" placeholder="Search {{total}} tracks here…" aria-label="Search this folder">
+  <div class="md-lib-meta">
+    {{#if files}}<span>Data/music/ · scanned {{scanned}}</span>
+    <button type="button" class="md-link" data-action="mdRescan"><i class="fa-solid fa-rotate" aria-hidden="true"></i> Rescan</button>
+    {{else}}<span>From Foundry's Playlists. Right-click a folder for battle music.</span>{{/if}}
+  </div>
+</section>

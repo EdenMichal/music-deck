@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/layout.json",
+  "id": "com.edenmichal.musicdeck.strip",
+  "items": [
+    { "key": "title", "type": "text", "rect": [12, 4, 120, 20], "alignment": "left", "text-overflow": "ellipsis", "font": { "size": 13, "weight": 600 }, "value": "" },
+    { "key": "value", "type": "text", "rect": [132, 4, 56, 20], "alignment": "right", "font": { "size": 13, "weight": 600 }, "value": "" },
+    { "key": "line1", "type": "text", "rect": [12, 26, 176, 22], "alignment": "left", "text-overflow": "ellipsis", "font": { "size": 14, "weight": 500 }, "value": "" },
+    { "key": "line2", "type": "text", "rect": [12, 50, 176, 24], "alignment": "left", "text-overflow": "ellipsis", "font": { "size": 14, "weight": 500 }, "value": "" },
+    { "key": "bar", "type": "gbar", "rect": [12, 78, 176, 16], "value": 0, "range": { "min": 0, "max": 100 }, "bar_h": 8, "bar_bg_c": "#2c2d35", "bar_fill_c": "#6fb1e8", "border_w": 0 }
+  ]
+}

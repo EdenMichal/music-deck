@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scene Combo</title>
+    <script src="sdpi-components.js"></script>
+  </head>
+  <body>
+    <sdpi-item label="Scenes">
+      <sdpi-checkbox-list setting="sceneIds" datasource="getScenes" hot-reload loading="Loading scenes…" columns="1"></sdpi-checkbox-list>
+    </sdpi-item>
+    <sdpi-item label="Title">
+      <sdpi-textfield setting="title" placeholder="Optional: the scenes' names"></sdpi-textfield>
+    </sdpi-item>
+    <sdpi-item>
+      <p style="margin: 0; opacity: 0.7; font-size: 11px;">Tick two or more scenes. Press to play them together: their layers fade in, and every other scene and the General layers fade out. Press again while just these scenes play to fade them out. The key lights while all of them play. A scene deleted in Foundry is skipped; if none are left, the key shows a warning. To change lights and sound together, put this key in a Multi Action after the Philips Hue “Set Scene”. Make and edit scenes in Foundry's Ambient tab.</p>
+    </sdpi-item>
+  </body>
+</html>

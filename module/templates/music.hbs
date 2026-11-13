@@ -1,0 +1,28 @@
+<section class="md-view md-music" {{#if hidden}}hidden{{/if}}>
+  <div class="md-seg" role="group" aria-label="Which deck's queue">
+    {{#each tabs}}<button type="button" class="{{#if active}}on{{/if}}" data-action="mdQueue" data-deck="{{id}}" aria-pressed="{{#if active}}true{{else}}false{{/if}}"><span class="md-key {{css}}" aria-hidden="true">{{id}}</span> Deck {{id}} queue</button>{{/each}}
+  </div>
+  <div class="md-mode" data-deck="{{deck}}" role="group" aria-label="Deck {{deck}} play mode">
+    {{#each modes}}<button type="button" class="md-pm {{#if on}}on{{/if}}" data-action="mdDeckMode" data-mode="{{mode}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" data-tooltip="{{tip}}">
+      <span class="md-pm-icon" aria-hidden="true"><i class="fa-solid {{icon}}"></i>{{#if one}}<b>1</b>{{/if}}</span>{{label}}</button>{{/each}}
+  </div>
+  <ol class="md-queue" data-deck="{{deck}}">
+    {{#each rows}}
+    <li class="md-row {{#if current}}current{{/if}} {{#if playing}}playing{{/if}}" draggable="true" data-index="{{@index}}" data-sound-id="{{id}}">
+      <span class="md-grip" aria-hidden="true"><i class="fa-solid fa-grip-vertical"></i></span>
+      <span class="md-num">{{#if playing}}<i class="fa-solid fa-volume-high" aria-label="Playing"></i>{{else}}{{n}}{{/if}}</span>
+      <span class="md-name">{{name}}{{#if next}}<span class="md-next">next</span>{{/if}}</span>
+      <span class="md-dur">{{duration}}</span>
+      <span class="md-hover">
+        <button type="button" class="md-chip" data-action="mdPlayNow">Play now</button>
+        <button type="button" class="md-chip md-chip-{{../otherCss}}" data-action="mdCue">Cue on {{../other}}</button>
+        <button type="button" class="md-chip md-chip-x" data-action="mdEditCues" data-tooltip="Edit cues" aria-label="Edit cues of {{name}}"><i class="fa-solid fa-scissors"></i></button>
+        <button type="button" class="md-chip md-chip-x" data-action="mdRemove" data-tooltip="Remove from queue" aria-label="Remove {{name}} from the queue"><i class="fa-solid fa-xmark"></i></button>
+      </span>
+    </li>
+    {{else}}
+    <li class="md-empty">Deck {{deck}}'s queue is empty.</li>
+    {{/each}}
+  </ol>
+  <button type="button" class="md-add" data-action="mdGoLibrary"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add tracks from Library</button>
+</section>

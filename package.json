@@ -1,0 +1,19 @@
+{
+  "name": "music-deck",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "module",
+    "deck-plugin"
+  ],
+  "scripts": {
+    "build": "npm run build -w module && npm run build -w deck-plugin",
+    "watch": "npm run watch -w module",
+    "test": "vitest run",
+    "typecheck": "tsc -p module --noEmit && tsc -p deck-plugin --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

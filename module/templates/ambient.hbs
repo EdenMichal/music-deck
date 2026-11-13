@@ -1,0 +1,58 @@
+{{#*inline "layerRow"}}
+<div class="md-layer {{#if on}}on{{/if}} {{#if off}}is-off{{/if}}" data-sound-id="{{id}}">
+  <span class="md-name" data-tooltip="{{#if off}}{{name}}: off in this scene, so it stays off when you play the scene. Turn it on to bring it back.{{else}}{{name}}{{/if}}">{{name}}</span>
+  <input type="range" min="0" max="100" value="{{level}}" data-slider="layer" aria-label="{{name}} level">
+  <button type="button" class="md-toggle {{#if on}}on{{/if}}" data-action="mdLayer" aria-pressed="{{on}}" aria-label="{{name}} on or off"></button>
+  {{#if follows}}<span class="md-follows" data-tooltip="Follows the General folder: it goes when you remove the file from there"><i class="fa-solid fa-link" aria-hidden="true"></i><span class="md-sr">Follows the General folder</span></span>
+  {{else}}<button type="button" class="md-chip md-chip-x" data-action="mdRemoveSound" data-tooltip="Delete layer" aria-label="Delete {{name}}"><i class="fa-solid fa-xmark"></i></button>{{/if}}
+</div>
+{{/inline}}
+<section class="md-view md-ambient" data-channel="ambient" {{#if hidden}}hidden{{/if}}>
+  {{#each scenes}}
+  <div class="md-scene-group {{#if active}}on{{/if}} {{#if open}}open{{/if}}" data-scene-id="{{id}}">
+    <div class="md-scene-head">
+      <button type="button" class="md-scene-fold" data-action="mdSceneFold" aria-expanded="{{#if open}}true{{else}}false{{/if}}"
+        data-tooltip="{{#if open}}Hide{{else}}Show{{/if}} its layers. Right-click to edit, add what's playing, or delete.">
+        <i class="fa-solid fa-chevron-right md-fold-icon" aria-hidden="true"></i>
+        <span class="md-scene-name">{{name}}</span>
+        <small class="md-scene-sum">{{summary}}</small>
+      </button>
+      <button type="button" class="md-scene-play {{#if active}}on{{/if}}" data-action="mdScene" data-tooltip="{{playTip}}"
+        aria-pressed="{{#if active}}true{{else}}false{{/if}}" aria-label="{{playTip}}"><i class="fa-solid {{#if active}}fa-stop{{else}}fa-play{{/if}}" aria-hidden="true"></i></button>
+      <button type="button" class="md-scene-edit" data-action="mdEditScene" data-tooltip="Edit {{name}}" aria-label="Edit scene {{name}}"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+    </div>
+    <div class="md-scene-level" data-tooltip="{{name}}'s level: mix it against the other scenes playing. Multiplies with the Ambient level.">
+      <span class="md-scene-level-name">Level</span>
+      <input type="range" min="0" max="100" value="{{level}}" data-slider="scene" aria-label="{{name}} level">
+      <span class="md-scene-level-pct" data-scene-label>{{level}}%</span>
+    </div>
+    <div class="md-scene-layers" {{#unless open}}hidden{{/unless}}>
+      {{#each layers}}{{> layerRow}}{{else}}
+      <p class="md-empty">No layers yet. A scene with none means quiet.</p>
+      {{/each}}
+      <button type="button" class="md-add md-add-sm" data-action="mdSceneAdd"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add a layer from the Library</button>
+    </div>
+  </div>
+  {{/each}}
+  {{#if (or general.length generalSource)}}
+  <div class="md-scene-group md-general {{#if generalOpen}}open{{/if}}" data-general>
+    <div class="md-scene-head">
+      <button type="button" class="md-scene-fold md-scene-title" data-action="mdGeneralFold" aria-expanded="{{#if generalOpen}}true{{else}}false{{/if}}"
+        data-tooltip="{{#if generalOpen}}Hide{{else}}Show{{/if}} the General layers">
+        <i class="fa-solid fa-chevron-right md-fold-icon" aria-hidden="true"></i>
+        <span class="md-scene-name">General</span>
+        <small class="md-scene-sum">Plays alongside any scene.{{#if generalSource}} Follows <strong>{{generalSource}}</strong>.{{/if}}</small>
+      </button>
+    </div>
+    <div class="md-scene-layers" {{#unless generalOpen}}hidden{{/unless}}>
+      {{#each general}}{{> layerRow}}{{else}}
+      <p class="md-empty">{{generalSource}} has no sounds yet.</p>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+  {{#unless scenes.length}}{{#unless general.length}}
+  <p class="md-empty">No sound scenes yet. Make one, then add rain, wind or a crowd to it from the Library.</p>
+  {{/unless}}{{/unless}}
+  <button type="button" class="md-add" data-action="mdSaveScene"><i class="fa-solid fa-plus" aria-hidden="true"></i> New scene…</button>
+</section>

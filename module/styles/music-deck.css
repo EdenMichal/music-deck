@@ -1,0 +1,460 @@
+/* Music Deck Playlists tab: "The Booth at Night" (see DESIGN.md at the repo root).
+   Everything is scoped to the deck view, so the classic view keeps core's look. */
+
+/* Tokens. The scene editor, the players' banner and their Table-play note sit outside the tab, so they get them too. */
+.music-deck-tab.md-deck-view,
+.music-deck-tab .md-back,
+.md-scene-editor,
+#md-sound-banner,
+.md-table-note {
+  --md-bg: #1f2026;
+  --md-panel: #272830;
+  --md-line: #3a3b46;
+  --md-text: #e8e6e3;
+  --md-text-2: #c4c2cc;
+  --md-muted: #a3a1ad;
+  --md-accent: #e0a65a;
+  --md-a: #6fb1e8;
+  --md-b: #c58be8;
+  --md-amb: #7cc79a;
+  --md-sfx: #e8846f;
+  --md-table: #ec8db6;
+  --md-online: #45c9cf;
+  --md-danger: #f5625f;
+  --md-ink: #111318;
+  --md-a-wash: rgba(111, 177, 232, .28);
+  --md-b-wash: rgba(197, 139, 232, .28);
+  --md-amb-wash: rgba(124, 199, 154, .28);
+  --md-sfx-wash: rgba(232, 132, 111, .28);
+  --md-table-wash: rgba(236, 141, 182, .16);
+  --md-online-wash: rgba(69, 201, 207, .16);
+  --md-radius: 8px;
+  --md-fs-label: 11px;
+  --md-fs-meta: 12px;
+  --md-fs-body: 13px;
+  --md-fs-title: 14px;
+  --md-ease: cubic-bezier(.2, .8, .2, 1);
+}
+.music-deck-tab.md-deck-view {
+  background: var(--md-bg);
+  color: var(--md-text);
+  font-size: var(--md-fs-body);
+  gap: 0;
+  padding: 0;
+  scrollbar-color: var(--md-line) transparent;
+}
+.music-deck-tab.md-deck-view [hidden] { display: none !important; }
+.music-deck-tab.md-deck-view ::selection { background: rgba(224, 166, 90, .35); color: var(--md-text); }
+.music-deck-tab.md-deck-view button { font: inherit; color: inherit; line-height: 1.2; }
+.music-deck-tab.md-deck-view button:focus-visible,
+.music-deck-tab.md-deck-view input:focus-visible,
+.music-deck-tab.md-deck-view select:focus-visible { outline: 2px solid var(--md-accent); outline-offset: 1px; box-shadow: none; }
+/* Slider caps are Lamp White, so amber stays free for what's pending. */
+.music-deck-tab.md-deck-view input[type=range],
+.md-scene-editor input[type=range] { --range-thumb-background-color: var(--md-text); --range-thumb-border-color: var(--md-bg); --range-track-color: var(--md-line); --range-track-border-color: var(--md-line); }
+.music-deck-tab.md-deck-view input[type=range] { width: 100%; min-width: 0; margin: 0; height: 18px; background: transparent; }
+.music-deck-tab.md-deck-view input[data-slider=fader]::-webkit-slider-thumb { width: 10px; height: 18px; margin-top: -8px; border-radius: 3px; }
+.music-deck-tab.md-deck-view input[data-slider=fader]::-moz-range-thumb { width: 10px; height: 18px; border-radius: 3px; }
+.music-deck-tab.md-deck-view input[type=range]::-webkit-slider-runnable-track { background: var(--range-track-color, var(--md-line)); height: 4px; border-radius: 2px; }
+.music-deck-tab.md-deck-view input[type=range]::-moz-range-track { background: var(--range-track-color, var(--md-line)); height: 4px; border-radius: 2px; }
+.music-deck-tab.md-deck-view input::placeholder { color: var(--md-muted); opacity: 1; }
+
+/* Shared bits */
+.md-deck-view .md-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.md-deck-view .md-icon { background: none; border: none; width: 26px; height: 26px; padding: 0; border-radius: 5px; cursor: pointer; flex: none; color: var(--md-text-2); }
+.md-deck-view .md-icon:hover:not(:disabled) { background: var(--md-line); color: var(--md-text); }
+.md-deck-view .md-icon:disabled { opacity: .35; cursor: default; }
+.md-deck-view .md-icon.on { color: var(--md-danger); }
+.md-deck-view .md-chip { background: var(--md-line); border: none; border-radius: 5px; padding: 3px 8px; min-height: 24px; font-size: var(--md-fs-label); font-weight: 600; letter-spacing: .02em; cursor: pointer; white-space: nowrap; height: auto; width: auto; flex: none; color: var(--md-text); }
+.md-deck-view .md-chip:hover { filter: brightness(1.25); }
+.md-deck-view .md-chip.on { background: var(--md-accent); color: var(--md-ink); }
+.md-deck-view .md-chip-a { background: var(--md-a-wash); }
+.md-deck-view .md-chip-b { background: var(--md-b-wash); }
+.md-deck-view .md-chip-amb { background: var(--md-amb-wash); }
+.md-deck-view .md-chip-sfx { background: var(--md-sfx-wash); }
+.md-deck-view .md-chip-combat { background: color-mix(in srgb, var(--md-danger) 28%, transparent); }
+.md-deck-view .md-chip-x { background: none; color: var(--md-muted); padding: 3px 6px; }
+.md-deck-view .md-chip-x:hover { color: var(--md-danger); filter: none; }
+.md-deck-view .md-link { background: none; border: none; color: var(--md-text-2); font-size: var(--md-fs-meta); padding: 2px 0; min-height: 24px; cursor: pointer; width: auto; height: auto; }
+.md-deck-view .md-link:hover { color: var(--md-text); }
+.md-deck-view .md-empty { color: var(--md-muted); font-size: var(--md-fs-meta); line-height: 1.4; padding: 10px 4px; list-style: none; margin: 0; }
+.md-deck-view .md-add { width: 100%; margin-top: 8px; background: none; border: 1px dashed var(--md-line); color: var(--md-text-2); border-radius: 6px; padding: 8px; cursor: pointer; height: auto; }
+.md-deck-view .md-add:hover { color: var(--md-text); border-color: var(--md-muted); }
+.md-deck-view .md-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* A deck letter as a small key: the letter backs up the colour everywhere a deck is named. */
+.md-deck-view .md-key { display: inline-grid; place-items: center; width: 18px; height: 18px; flex: none; border-radius: 4px; font-size: var(--md-fs-label); font-weight: 800; line-height: 1; box-shadow: inset 0 0 0 1.5px currentColor; }
+.md-deck-view .md-key.a { color: var(--md-a); }
+.md-deck-view .md-key.b { color: var(--md-b); }
+
+/* Now playing */
+.md-deck-view .md-now { flex: none; padding: 10px; border-bottom: 1px solid var(--md-line); background: linear-gradient(180deg, var(--md-panel), var(--md-bg) 120px); }
+.md-deck-view .md-status-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.md-deck-view .md-panic { background: transparent; border: 1px solid var(--md-danger); color: var(--md-danger); border-radius: 6px; padding: 3px 9px; min-height: 26px; font-size: var(--md-fs-meta); font-weight: 600; cursor: pointer; width: auto; height: auto; flex: none; }
+.md-deck-view .md-panic:hover { background: rgba(245, 98, 95, .14); }
+.md-deck-view .md-panic.on { background: var(--md-danger); color: var(--md-ink); }
+/* Panic is a state, not just a button: a strip says so and everything it silenced steps back. */
+.md-deck-view .md-panic-note { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; padding: 6px 9px; border-radius: 6px; background: var(--md-danger); color: var(--md-ink); font-size: var(--md-fs-body); font-weight: 600; line-height: 1.3; }
+.md-deck-view .md-now.is-panic .md-deck,
+.md-deck-view .md-now.is-panic .md-fader,
+.md-deck-view .md-now.is-panic .md-levels,
+.md-deck-view .md-now.is-panic .md-amb-line { opacity: .4; }
+
+/* Who hears it */
+.md-deck-view .md-presence { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: var(--md-fs-meta); color: var(--md-text-2); margin-bottom: 8px; min-height: 22px; }
+.md-deck-view .md-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--md-muted); }
+.md-deck-view .md-dot.ok { background: var(--md-mode); }
+.md-deck-view .md-dot.warn { background: var(--md-accent); }
+.md-deck-view .md-dot.none { background: none; box-shadow: inset 0 0 0 1.5px var(--md-mode); }
+.md-deck-view .md-dot.table { background: var(--md-mode); }
+.md-deck-view .md-hear-warn { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: var(--md-fs-meta); line-height: 18px; color: var(--md-ink); background: var(--md-accent); font-weight: 700; white-space: nowrap; }
+.md-deck-view .md-hear-who { margin: -4px 0 8px; font-size: var(--md-fs-meta); line-height: 1.35; color: var(--md-text); }
+
+/* Table play / Online play (GM) */
+/* Play mode: each mode has its own colour (Table rose, Online teal) on the button and on the dot under it. */
+.md-deck-view .md-now { --md-mode: var(--md-online); --md-mode-wash: var(--md-online-wash); }
+.md-deck-view .md-now.mode-table { --md-mode: var(--md-table); --md-mode-wash: var(--md-table-wash); }
+.md-deck-view .md-now .md-playmode { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; min-height: 26px; border-radius: 6px; font-size: var(--md-fs-meta); line-height: 16px; font-weight: 700; white-space: nowrap; color: var(--md-mode); background: var(--md-mode-wash); border: 1px solid var(--md-mode); }
+.md-deck-view .md-playmode i { color: inherit; }
+.md-deck-view .md-now .md-playmode:hover { background: var(--md-mode); color: var(--md-ink); }
+.md-deck-view .md-playmode:focus-visible { outline: 2px solid var(--md-accent); outline-offset: 1px; }
+
+/* Stream Deck link */
+.md-deck-view .md-link-chip { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; min-height: 22px; border-radius: 999px; font-size: var(--md-fs-label); line-height: 16px; color: var(--md-text-2); border: 1px solid var(--md-line); }
+.md-deck-view .md-link-chip.on { color: var(--md-amb); border-color: currentColor; }
+.md-deck-view .md-link-chip.off { color: var(--md-muted); border-style: dashed; }
+.md-deck-view .md-link-chip.pair { color: var(--md-ink); background: var(--md-accent); border-color: var(--md-accent); font-weight: 700; }
+.md-deck-view .md-link-chip:focus-visible { outline: 2px solid var(--md-accent); outline-offset: 1px; }
+
+/* Deck cards. The tile is filled while the players hear the deck and outlined when the fader has it out;
+   the title, bar and buttons dim with the fader, but the letter and the readout stay readable.
+   Room is left for a cue-chip row under the bar (track editor): add it inside .md-info. */
+.md-deck-view .md-deck { --md-presence: 1; --md-deck: var(--md-a); display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 8px; border-radius: var(--md-radius); background: var(--md-panel); margin-bottom: 6px; }
+.md-deck-view .md-deck.b { --md-deck: var(--md-b); }
+.md-deck-view .md-deck.battle { --md-deck: var(--md-danger); }
+
+.md-deck-view .md-deck .md-title-line,
+.md-deck-view .md-deck .md-bar,
+.md-deck-view .md-deck .md-ctrls { opacity: var(--md-presence); transition: opacity .15s ease; }
+.md-deck-view .md-tag { width: 28px; height: 28px; border-radius: 5px; display: grid; place-items: center; font-size: var(--md-fs-title); font-weight: 800; color: var(--md-ink); background: var(--md-deck); transition: background-color .15s ease, color .15s ease; }
+.md-deck-view .md-deck.off-air .md-tag { background: transparent; color: var(--md-deck); box-shadow: inset 0 0 0 2px var(--md-deck); }
+.md-deck-view .md-info { min-width: 0; }
+.md-deck-view .md-title-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.md-deck-view .md-title { flex: 0 1 auto; min-width: 0; font-size: var(--md-fs-title); font-weight: 600; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-deck-view .md-air { display: none; flex: none; padding: 0 5px; border-radius: 4px; font-size: var(--md-fs-label); font-weight: 700; letter-spacing: .02em; line-height: 16px; color: var(--md-ink); background: var(--md-deck); }
+.md-deck-view .md-deck:not(.off-air)[data-state=playing] .md-air { display: inline-block; }
+.md-deck-view .md-readout { display: flex; align-items: center; gap: 6px; margin-top: 1px; font-size: var(--md-fs-body); font-weight: 500; line-height: 1.3; color: var(--md-text-2); font-variant-numeric: tabular-nums; }
+.md-deck-view .md-state { font-size: 9px; width: 10px; text-align: center; flex: none; }
+.md-deck-view .md-status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-deck-view .md-deck[data-state=playing] .md-readout { color: var(--md-text); }
+.md-deck-view .md-deck[data-state=playing] .md-state { color: var(--md-deck); }
+.md-deck-view .md-deck[data-state=cued] .md-readout { color: var(--md-accent); }
+.md-deck-view .md-deck[data-state=empty] .md-readout { color: var(--md-muted); font-size: var(--md-fs-meta); font-weight: 400; }
+.md-deck-view .md-deck[data-state=empty] .md-title { color: var(--md-text-2); font-weight: 400; }
+.md-deck-view .md-bar { height: 4px; background: var(--md-line); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+.md-deck-view .md-bar i { display: block; height: 100%; background: var(--md-deck); transition: width .9s linear; }
+.md-deck-view .md-ctrls { display: flex; gap: 2px; }
+
+/* Crossfader */
+.md-deck-view .md-fader { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 7px; align-items: center; margin: 2px 0 8px; }
+.md-deck-view .md-fade-btn { display: inline-flex; align-items: center; gap: 5px; background: var(--md-accent); color: var(--md-ink) !important; border: none; border-radius: 6px; font-weight: 700; padding: 4px 10px; min-height: 26px; font-size: var(--md-fs-meta); cursor: pointer; width: auto; height: auto; white-space: nowrap; }
+.md-deck-view .md-fade-btn:hover { filter: brightness(1.1); }
+.md-deck-view .md-fade-to { font-weight: 800; }
+
+/* Channel levels */
+.md-deck-view .md-levels { display: grid; gap: 2px; }
+.md-deck-view .md-level { display: grid; grid-template-columns: 76px minmax(0, 1fr) 40px 26px; gap: 6px; align-items: center; }
+.md-deck-view .md-level-name { font-size: var(--md-fs-meta); color: var(--md-text-2); white-space: nowrap; }
+.md-deck-view .md-level-name i { width: 14px; text-align: center; color: var(--md-muted); }
+.md-deck-view .md-pct { text-align: right; font-size: var(--md-fs-body); font-weight: 500; color: var(--md-text-2); font-variant-numeric: tabular-nums; }
+.md-deck-view .md-mute .md-mute-on,
+.md-deck-view .md-mute.on .md-mute-off { display: none; }
+.md-deck-view .md-mute.on .md-mute-on { display: inline; }
+/* Volume tracks fill with their channel's colour up to the cap; Music runs Deck A blue into Deck B violet. */
+.music-deck-tab.md-deck-view .md-level input[type=range],
+.music-deck-tab.md-deck-view .md-layer input[type=range] { --md-fill: 0%; --md-fill-from: var(--md-amb); --md-fill-to: var(--md-amb); --range-track-color: linear-gradient(90deg, var(--md-fill-from), var(--md-fill-to) var(--md-fill), var(--md-line) var(--md-fill)); }
+.music-deck-tab.md-deck-view .md-level-music input[type=range] { --md-fill-from: var(--md-a); --md-fill-to: var(--md-b); }
+.music-deck-tab.md-deck-view .md-level-sfx input[type=range] { --md-fill-from: var(--md-sfx); --md-fill-to: var(--md-sfx); }
+.music-deck-tab.md-deck-view .md-layer:not(.on) input[type=range] { --md-fill-from: var(--md-muted); --md-fill-to: var(--md-muted); }
+.md-deck-view .md-level.is-muted input[type=range] { opacity: .35; }
+.md-deck-view .md-level.is-muted .md-pct { color: var(--md-muted); text-decoration: line-through; }
+.md-deck-view .md-level.is-muted .md-level-name { color: var(--md-danger); }
+.md-deck-view .md-level.is-muted .md-level-name i { color: inherit; }
+
+/* What the ambience is doing */
+.md-deck-view .md-amb-line { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: var(--md-fs-body); color: var(--md-muted); }
+.md-deck-view .md-amb-icon { width: 14px; text-align: center; }
+.md-deck-view .md-amb-names { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.md-deck-view .md-amb-line.on .md-amb-names { color: var(--md-amb); font-weight: 600; }
+.md-deck-view .md-amb-line.on .md-amb-icon { color: var(--md-amb); }
+
+/* Foldable sections in the Now block (Volumes, Decks). Folded, the header keeps a one-line summary. */
+.md-deck-view .md-fold-sec + .md-fold-sec { margin-top: 6px; }
+.md-deck-view .md-fold { display: flex; align-items: center; justify-content: flex-start; gap: 7px; width: 100%; min-height: 26px; padding: 2px 2px; margin: 0 0 2px; background: none; border: none; border-radius: 5px; cursor: pointer; color: var(--md-text-2); font-size: var(--md-fs-meta); font-weight: 600; text-align: left; height: auto; }
+.md-deck-view .md-fold:hover { color: var(--md-text); background: none; }
+.md-deck-view .md-fold-icon { width: 12px; font-size: 10px; color: var(--md-muted); transition: rotate .15s var(--md-ease); }
+.md-deck-view .md-fold-title { flex: none; }
+.md-deck-view .md-fold-sum { display: none; flex: 1 1 auto; min-width: 0; text-align: right; font-weight: 500; color: var(--md-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-deck-view .md-fold-sec.is-folded .md-fold-icon { rotate: -90deg; }
+.md-deck-view .md-fold-sec.is-folded .md-fold-sum { display: block; }
+.md-deck-view .md-fold-sec.is-folded .md-fold-body { display: none; }
+
+/* Tabs */
+.md-deck-view .md-tabs { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 30px; border-bottom: 1px solid var(--md-line); }
+.md-deck-view .md-tabs .md-tabs-fold { color: var(--md-muted); padding: 9px 0; }
+.md-deck-view .md-tabs .md-tabs-fold i { transition: rotate .15s var(--md-ease); }
+.md-deck-view .md-tabs.is-folded .md-tabs-fold i { rotate: 180deg; }
+.md-deck-view .md-tabs.is-folded button.on { border-bottom-color: transparent; }
+.md-deck-view .md-tabs button { display: flex; align-items: center; justify-content: center; gap: 5px; background: none; border: none; border-radius: 0; color: var(--md-muted); padding: 9px 0; min-width: 0; cursor: pointer; border-bottom: 2px solid transparent; height: auto; white-space: nowrap; }
+.md-deck-view .md-tabs button i { font-size: var(--md-fs-label); }
+.md-deck-view .md-tabs button.on { color: var(--md-text); border-bottom-color: var(--md-accent); font-weight: 600; }
+.md-deck-view .md-tabs button:hover { color: var(--md-text); }
+.md-deck-view .md-view { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 10px; margin: 0; }
+.md-deck-view .md-library-head { flex: none; overflow: visible; padding-bottom: 4px; }
+
+/* Segmented controls: Deck A / Deck B queue, Playlists / Files */
+.md-deck-view .md-seg { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; background: var(--md-panel); border-radius: 6px; padding: 2px; margin-bottom: 8px; }
+.md-deck-view .md-seg button { display: flex; align-items: center; justify-content: center; gap: 6px; background: none; border: none; color: var(--md-text-2); border-radius: 5px; padding: 5px; min-height: 28px; cursor: pointer; height: auto; }
+.md-deck-view .md-seg button:hover { color: var(--md-text); }
+.md-deck-view .md-seg button.on { background: var(--md-line); color: var(--md-text); font-weight: 600; }
+
+/* Music */
+.md-deck-view .md-mode { display: flex; gap: 6px; margin-bottom: 8px; font-size: var(--md-fs-meta); color: var(--md-text-2); align-items: center; flex-wrap: wrap; }
+.md-deck-view .md-mode { --md-deck: var(--md-a); --md-deck-wash: var(--md-a-wash); }
+.md-deck-view .md-mode[data-deck=B] { --md-deck: var(--md-b); --md-deck-wash: var(--md-b-wash); }
+.md-deck-view .md-mode .md-pm { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; min-height: 26px; border-radius: 6px; font-size: var(--md-fs-meta); line-height: 16px; font-weight: 600; white-space: nowrap; color: var(--md-text-2); border: 1px solid var(--md-line); }
+.md-deck-view .md-mode .md-pm:hover { color: var(--md-text); border-color: var(--md-text-2); }
+.md-deck-view .md-mode .md-pm.on { color: var(--md-text); background: var(--md-deck-wash); border-color: var(--md-deck); }
+.md-deck-view .md-mode .md-pm.on .md-pm-icon { color: var(--md-deck); }
+.md-deck-view .md-mode .md-pm:focus-visible { outline: 2px solid var(--md-deck); outline-offset: 1px; }
+.md-deck-view .md-pm-icon { position: relative; display: inline-flex; }
+.md-deck-view .md-pm-icon b { position: absolute; right: -5px; top: -5px; font-size: 9px; line-height: 1; font-weight: 800; }
+.md-deck-view .md-queue { list-style: none; margin: 0; padding: 0; }
+.md-deck-view .md-row { position: relative; display: grid; grid-template-columns: 12px 20px minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 5px 6px; border-radius: 6px; cursor: grab; min-height: 32px; }
+.md-deck-view .md-row:hover, .md-deck-view .md-row:focus-within { background: var(--md-panel); }
+.md-deck-view .md-row.playing { background: var(--md-a-wash); }
+.md-deck-view .md-queue[data-deck=B] .md-row.playing { background: var(--md-b-wash); }
+.md-deck-view .md-row.playing .md-name, .md-deck-view .md-row.playing .md-num { color: var(--md-a); font-weight: 600; }
+.md-deck-view .md-queue[data-deck=B] .md-row.playing .md-name,
+.md-deck-view .md-queue[data-deck=B] .md-row.playing .md-num { color: var(--md-b); }
+.md-deck-view .md-row.dragging { opacity: .4; }
+.md-deck-view .md-grip { color: var(--md-muted); opacity: .55; font-size: 10px; }
+.md-deck-view .md-row:hover .md-grip { opacity: 1; }
+.md-deck-view .md-num { color: var(--md-text-2); font-size: var(--md-fs-meta); text-align: right; font-variant-numeric: tabular-nums; }
+.md-deck-view .md-row.current .md-num { color: var(--md-accent); font-weight: 700; }
+.md-deck-view .md-next { margin-left: 7px; padding: 0 6px; border-radius: 4px; font-size: var(--md-fs-label); font-weight: 800; line-height: 16px; letter-spacing: .02em; color: var(--md-ink); background: var(--md-accent); vertical-align: 1px; }
+.md-deck-view .md-dur { color: var(--md-text-2); font-size: var(--md-fs-meta); font-variant-numeric: tabular-nums; }
+/* Row actions float over the row's end on hover or keyboard focus, so a resting list keeps its full names. */
+.md-deck-view .md-hover,
+.md-deck-view .md-lib-add { position: absolute; right: 4px; top: 50%; translate: 0 -50%; display: flex; gap: 3px; padding-left: 10px; background: linear-gradient(90deg, transparent, var(--md-panel) 10px); opacity: 0; pointer-events: none; }
+.md-deck-view .md-row:hover .md-hover, .md-deck-view .md-row:focus-within .md-hover,
+.md-deck-view .md-lib:hover .md-lib-add, .md-deck-view .md-lib:focus-within .md-lib-add,
+.md-deck-view .md-lib-folder:hover .md-lib-add, .md-deck-view .md-lib-folder:focus-within .md-lib-add { opacity: 1; pointer-events: auto; }
+.md-deck-view .md-row.playing .md-hover { background: linear-gradient(90deg, transparent, #2c3a47 10px); }
+.md-deck-view .md-queue[data-deck=B] .md-row.playing .md-hover { background: linear-gradient(90deg, transparent, #3a3147 10px); }
+
+/* Ambient */
+.md-deck-view .md-layer { display: grid; grid-template-columns: minmax(0, 1fr) 68px 38px auto; gap: 6px; align-items: center; padding: 8px; border-radius: 6px; background: var(--md-panel); margin-bottom: 6px; }
+.md-deck-view .md-layer .md-name { color: var(--md-text-2); }
+.md-deck-view .md-layer.on .md-name { color: var(--md-text); font-weight: 600; }
+.md-deck-view .md-toggle { width: 38px; height: 22px; min-height: 0; border-radius: 11px; background: var(--md-line); position: relative; cursor: pointer; border: none; padding: 0; flex: none; }
+.md-deck-view .md-toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--md-muted); transition: translate .15s var(--md-ease), background-color .15s ease; }
+.md-deck-view .md-toggle.on { background: var(--md-amb-wash); box-shadow: inset 0 0 0 1px var(--md-amb); }
+.md-deck-view .md-toggle.on::after { translate: 16px 0; background: var(--md-amb); }
+
+/* Sound scenes (v2.29): each scene is a group that owns its layers */
+.md-deck-view .md-scene-group { margin-bottom: 8px; border: 1px solid var(--md-line); border-radius: 8px; }
+.md-deck-view .md-scene-group.on { border-color: var(--md-amb); }
+.md-deck-view .md-scene-group.md-general { border-style: dashed; }
+.md-deck-view .md-scene-head { display: flex; align-items: center; gap: 4px; padding: 3px 5px 3px 2px; }
+.md-deck-view .md-scene-fold { flex: 1; min-width: 0; display: flex; align-items: center; gap: 7px; padding: 4px; height: auto; min-height: 28px; background: none; border: none; border-radius: 5px; color: var(--md-text); text-align: left; cursor: pointer; }
+.md-deck-view .md-scene-fold:hover { background: none; }
+.md-deck-view .md-scene-title { flex-wrap: wrap; row-gap: 2px; }
+.md-deck-view .md-scene-group .md-fold-icon { rotate: 0deg; }
+.md-deck-view .md-scene-group.open .md-fold-icon { rotate: 90deg; }
+.md-deck-view .md-scene-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.md-deck-view .md-scene-sum { margin-left: auto; color: var(--md-muted); font-size: var(--md-fs-meta); white-space: nowrap; }
+.md-deck-view .md-general .md-scene-sum { margin-left: 0; white-space: normal; }
+.md-deck-view .md-general .md-scene-sum strong { color: var(--md-text-2); font-weight: 600; }
+.md-deck-view .md-layer .md-follows { display: grid; place-items: center; width: 24px; color: var(--md-muted); font-size: 10px; }
+.md-deck-view .md-layer.is-off:not(.on) .md-name { color: var(--md-muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--md-muted) 60%, transparent); }
+.md-deck-view .md-general-src { margin-left: 6px; color: var(--md-amb); }
+.md-deck-view .md-scene-play { display: grid; place-items: center; flex: none; width: 28px; height: 28px; min-height: 0; padding: 0; border: none; border-radius: 999px; background: var(--md-line); color: var(--md-text); font-size: 11px; cursor: pointer; }
+.md-deck-view .md-scene-play:hover { filter: brightness(1.25); }
+.md-deck-view .md-scene-play.on { background: var(--md-amb); color: var(--md-ink); }
+.md-deck-view .md-scene-head .md-scene-edit { position: static; flex: none; width: 24px; height: 24px; border: none; background: none; color: var(--md-muted); opacity: 0; pointer-events: none; }
+.md-deck-view .md-scene-head:hover .md-scene-edit, .md-deck-view .md-scene-head:focus-within .md-scene-edit { opacity: 1; pointer-events: auto; }
+.md-deck-view .md-scene-head .md-scene-edit:hover { background: none; color: var(--md-text); }
+.md-deck-view .md-scene-layers { padding: 0 6px 6px; }
+.md-deck-view .md-scene-layers .md-empty { padding: 4px 4px 8px; }
+.md-deck-view .md-add.md-add-sm { margin-top: 0; padding: 5px; font-size: var(--md-fs-meta); }
+
+/* Sound scenes */
+.md-deck-view .md-scenes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; padding: 6px 0 10px; border-bottom: 1px solid var(--md-line); }
+/* Each scene's pencil floats on its top-right corner on hover or keyboard focus; right-click still opens the menu. */
+.md-deck-view .md-scene-wrap { position: relative; display: inline-flex; }
+.md-deck-view .md-scene-edit { position: absolute; top: -7px; right: -7px; z-index: 1; display: grid; place-items: center; width: 22px; height: 22px; min-height: 0; padding: 0; border-radius: 999px; border: 2px solid var(--md-bg); background: var(--md-line); color: var(--md-text); font-size: 10px; line-height: 1; cursor: pointer; opacity: 0; pointer-events: none; }
+.md-deck-view .md-scene-edit:hover { background: var(--md-text); color: var(--md-ink); }
+.md-deck-view .md-scene-wrap:hover .md-scene-edit, .md-deck-view .md-scene-wrap:focus-within .md-scene-edit { opacity: 1; pointer-events: auto; }
+.md-deck-view .md-scene { padding: 4px 10px; min-height: 28px; font-size: var(--md-fs-meta); }
+.md-deck-view .md-scene.on { background: var(--md-amb); color: var(--md-ink); font-weight: 700; }
+.md-deck-view .md-scene-save { background: none; border: 1px dashed var(--md-line); color: var(--md-text-2); padding: 3px 9px; font-size: var(--md-fs-meta); }
+
+/* SFX: hot-cue pads with a lit top edge */
+.md-deck-view .md-pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; }
+.md-deck-view .md-pad-wrap { position: relative; }
+.md-deck-view .md-pad-wrap .md-chip-x { position: absolute; top: 4px; right: 2px; opacity: 0; pointer-events: none; }
+.md-deck-view .md-pad-wrap:hover .md-chip-x, .md-deck-view .md-pad-wrap:focus-within .md-chip-x { opacity: 1; pointer-events: auto; }
+.md-deck-view .md-pad { width: 100%; aspect-ratio: 1; height: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; border-radius: 8px; border: none; border-top: 3px solid var(--md-sfx); font-weight: 600; font-size: var(--md-fs-body); line-height: 1.2; cursor: pointer; padding: 6px; background: var(--md-panel); overflow: hidden; overflow-wrap: anywhere; text-align: center; transition: background-color .12s ease, scale .08s ease; }
+.md-deck-view .md-pad:hover { background: var(--md-line); }
+.md-deck-view .md-pad:active { scale: .96; }
+.md-deck-view .md-pad.playing { background: var(--md-sfx); color: var(--md-ink); }
+.md-deck-view .md-pad small { display: block; font-weight: 400; color: var(--md-text-2); font-size: var(--md-fs-label); }
+.md-deck-view .md-pad.playing small { color: var(--md-ink); }
+.md-deck-view .md-pad-add { border-top-color: var(--md-line); color: var(--md-text-2); flex-direction: row; }
+.md-deck-view .md-pad-add:hover { color: var(--md-text); }
+
+/* Library */
+.md-deck-view .md-folders { margin-bottom: 6px; }
+.md-deck-view .md-search { width: 100%; background: var(--md-panel); border: 1px solid var(--md-line); color: var(--md-text); border-radius: 6px; padding: 6px 9px; margin-bottom: 8px; height: 32px; font-size: var(--md-fs-body); }
+.md-deck-view .md-lib-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: var(--md-fs-meta); color: var(--md-muted); }
+.md-deck-view .md-lib-list { list-style: none; padding-top: 0; }
+/* Room is left for cue sub-rows (track editor): indent them to the name column (34px) under their track. */
+.md-deck-view .md-lib { position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; align-items: center; padding: 4px 6px; border-radius: 6px; }
+.md-deck-view .md-lib:hover, .md-deck-view .md-lib:focus-within { background: var(--md-panel); }
+.md-deck-view .md-ear.on { color: var(--md-accent); box-shadow: inset 0 0 0 1px var(--md-accent); }
+.md-deck-view .md-meta { font-size: var(--md-fs-meta); color: var(--md-muted); }
+.md-deck-view .md-lib .md-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Library folders */
+.md-deck-view .md-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; margin: 6px 0; font-size: var(--md-fs-meta); }
+.md-deck-view .md-crumb { background: none; border: none; padding: 0 3px; height: auto; min-height: 24px; color: var(--md-text-2); cursor: pointer; }
+.md-deck-view .md-crumb:hover { color: var(--md-text); }
+.md-deck-view .md-crumb.here { color: var(--md-text); font-weight: 600; display: inline-flex; align-items: center; min-height: 24px; }
+.md-deck-view .md-crumb-sep { color: var(--md-muted); font-size: 9px; }
+.md-deck-view .md-lib-folder { position: relative; display: block; padding: 2px 6px; border-radius: 6px; list-style: none; }
+.md-deck-view .md-lib-folder:hover, .md-deck-view .md-lib-folder:focus-within { background: var(--md-panel); }
+.md-deck-view .md-lib-open { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; width: 100%; background: none; border: none; height: auto; min-height: 30px; padding: 4px 0; text-align: left; cursor: pointer; }
+.md-deck-view .md-lib-open > i { color: var(--md-text-2); width: 16px; text-align: center; }
+.md-deck-view .md-lib-open .md-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.md-deck-view .md-lib-open .md-meta { color: var(--md-muted); font-size: var(--md-fs-meta); font-variant-numeric: tabular-nums; }
+.md-deck-view .md-battle { color: var(--md-danger); }
+
+/* The Battle deck (v2.39): its own foldable section under the decks. Every child of the grid may shrink
+   (min-width 0), so a long track name can't push the Battle level's % out of the tab. */
+.md-deck-view .md-bdeck-sec .md-fold-title { color: var(--md-danger); }
+.md-deck-view .md-bdeck { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 8px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(245, 98, 95, .35); background: rgba(245, 98, 95, .06); }
+.md-deck-view .md-bdeck > * { min-width: 0; }
+.md-deck-view .md-bdeck-sec:not(.on) .md-bdeck { box-shadow: inset 0 0 0 1px var(--md-line); background: none; }
+.md-deck-view .md-bdeck .md-deck { margin-bottom: 0; }
+.md-deck-view .md-bdeck-head { display: flex; align-items: center; gap: 6px; min-height: 26px; }
+.md-deck-view .md-bdeck-note { flex: 1 1 auto; min-width: 0; color: var(--md-muted); font-size: var(--md-fs-meta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.md-deck-view .md-bdeck-btn { color: var(--md-danger); }
+.md-deck-view .md-level.md-level-battle { grid-template-columns: 76px minmax(0, 1fr) 40px; padding-right: 4px; }
+.music-deck-tab.md-deck-view .md-level-battle input[type=range] { --md-fill-from: var(--md-danger); --md-fill-to: var(--md-danger); }
+.md-deck-view .md-bdeck-queue { list-style: none; margin: 0; padding: 0; max-height: 180px; overflow-y: auto; }
+.md-deck-view .md-bdeck-queue .md-row { grid-template-columns: 20px minmax(0, 1fr) auto; cursor: default; }
+.md-deck-view .md-bdeck-queue .md-row.playing { background: rgba(245, 98, 95, .18); }
+.md-deck-view .md-bdeck-queue .md-row.playing .md-name, .md-deck-view .md-bdeck-queue .md-row.playing .md-num { color: var(--md-danger); }
+.md-deck-view .md-bdeck-queue .md-row.playing .md-hover { background: linear-gradient(90deg, transparent, #3d2b2c 10px); }
+
+/* Footer */
+.md-deck-view .md-foot { flex: none; padding: 6px 10px; border-top: 1px solid var(--md-line); }
+.md-deck-view .md-foot-links { display: flex; justify-content: space-between; }
+/* Undo strip: the last remove, with Undo and Redo. Quiet text; the button is the loud part. */
+.md-deck-view .md-undo { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid var(--md-line); }
+.md-deck-view .md-undo-what { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--md-fs-meta); color: var(--md-text-2); }
+.md-deck-view .md-undo-btn { display: inline-flex; align-items: center; gap: 5px; }
+.md-deck-view .md-chip:disabled { opacity: .35; cursor: default; }
+
+/* Classic view: the way back */
+.music-deck-tab .md-back { margin: 6px 8px 0; flex: none; }
+
+/* Big mixer: the same view with more room, read from further away */
+#playlists-popout.music-deck-tab { min-width: 440px; min-height: 620px; }
+#playlists-popout.md-deck-view .md-pads { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+#playlists-popout.md-deck-view .md-deck { grid-template-columns: 34px minmax(0, 1fr) auto; padding: 10px; }
+#playlists-popout.md-deck-view .md-tag { width: 34px; height: 34px; font-size: 17px; }
+#playlists-popout.md-deck-view .md-title { font-size: 16px; }
+#playlists-popout.md-deck-view .md-readout { font-size: 14px; }
+
+/* "Click to turn on sound" banner, until the first click */
+#md-sound-banner { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 9px 16px; border-radius: 8px; background: var(--md-panel); color: var(--md-text); border: 1px solid var(--md-accent); box-shadow: 0 4px 16px rgba(0, 0, 0, .45); font-size: 14px; font-weight: 600; cursor: pointer; }
+#md-sound-banner i { color: var(--md-accent); font-size: 16px; }
+
+/* The players' note in Table play */
+.md-table-note { flex: none; display: flex; align-items: flex-start; gap: 8px; margin: 6px 8px 0; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--md-amb); font-size: 12px; line-height: 1.35; }
+.md-table-note[hidden] { display: none; }
+.md-table-note i { margin-top: 2px; color: var(--md-amb); }
+.md-table-note strong { display: block; }
+
+/* Sound scene editor (dialog) */
+.md-scene-editor .md-ed-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.md-scene-editor .md-ed-name input { flex: 1; }
+.md-scene-editor .md-ed-hint { font-size: 12px; line-height: 1.4; color: var(--md-text-2); margin: 8px 0; }
+.md-scene-editor .md-ed-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 50vh; overflow-y: auto; }
+.md-scene-editor .md-ed-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px 40px 26px; gap: 8px; align-items: center; padding: 5px 4px 5px 9px; border-radius: 6px; background: var(--md-panel); }
+.md-scene-editor .md-ed-sound { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--md-text); }
+.md-scene-editor .md-ed-sound i { color: var(--md-amb); width: 14px; text-align: center; }
+.md-scene-editor .md-ed-row output { font-size: 13px; text-align: right; color: var(--md-text-2); font-variant-numeric: tabular-nums; }
+.md-scene-editor .md-ed-remove { width: 26px; height: 26px; padding: 0; line-height: 1; background: none; border: none; color: var(--md-muted); }
+.md-scene-editor .md-ed-remove:hover { color: var(--md-danger); }
+.md-scene-editor .md-ed-empty { font-size: 12px; color: var(--md-text-2); margin: 4px 0; }
+.md-scene-editor .md-ed-add { position: relative; margin-top: 8px; }
+.md-scene-editor .md-ed-search-icon { position: absolute; left: 10px; top: 0; height: var(--input-height, 32px); display: flex; align-items: center; color: var(--md-muted); pointer-events: none; }
+.md-scene-editor .md-ed-search { padding-left: 30px; }
+.md-scene-editor .md-ed-search::placeholder { color: var(--md-muted); opacity: 1; }
+.md-scene-editor .md-ed-results { list-style: none; margin: 4px 0 0; padding: 0; max-height: 30vh; overflow-y: auto; }
+.md-scene-editor .md-ed-results li { display: flex; justify-content: space-between; gap: 8px; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+.md-scene-editor .md-ed-results li:hover { background: var(--md-panel); }
+.md-scene-editor .md-ed-results li small { color: var(--md-muted); white-space: nowrap; }
+.md-scene-editor .md-ed-results li.md-ed-none { cursor: default; color: var(--md-text-2); font-size: 12px; }
+.md-scene-editor .md-ed-results li.md-ed-none:hover { background: none; }
+
+/* Motion: one quiet pulse for the loudest pending state, nothing for people who asked for less. */
+@media (prefers-reduced-motion: no-preference) {
+  .md-deck-view .md-hover, .md-deck-view .md-lib-add, .md-deck-view .md-pad-wrap .md-chip-x, .md-deck-view .md-scene-edit { transition: opacity .12s ease; }
+  .md-deck-view .md-hear-warn i, .md-deck-view .md-dot.warn { animation: md-pulse 1.6s ease-in-out infinite; }
+}
+@keyframes md-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) {
+  .md-deck-view *, .md-deck-view *::after, #md-sound-banner { transition: none !important; animation: none !important; }
+  .md-deck-view .md-pad:active { scale: none; }
+}
+
+/* Cues (track editor T3). Each chip carries its number as well as its colour (the Letter Rule): the cue you hear
+   has a solid 2px ring and a tinted fill, a switch waiting for the end of the loop a dashed amber ring that blinks. */
+.md-deck-view .md-cues { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: -2px; }
+.md-deck-view .md-cue { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; min-height: 24px; height: auto; width: auto; padding: 2px 8px 2px 3px; border: none; border-radius: 5px; background: transparent; box-shadow: inset 0 0 0 1px var(--md-line); font-size: var(--md-fs-label); font-weight: 600; color: var(--md-text-2); cursor: pointer; }
+.md-deck-view .md-cue:hover { background: var(--md-line); color: var(--md-text); }
+.md-deck-view .md-cue-n { display: inline-grid; place-items: center; flex: none; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 4px; background: var(--cue); color: var(--md-ink); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.md-deck-view .md-cue-name { min-width: 0; max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.md-deck-view .md-cue.lit { background: color-mix(in srgb, var(--cue) 20%, transparent); box-shadow: inset 0 0 0 2px var(--cue); color: var(--md-text); }
+.md-deck-view .md-cue.pending { outline: 2px dashed var(--md-accent); outline-offset: -2px; color: var(--md-text); animation: md-cue-wait 1s step-end infinite; }
+@keyframes md-cue-wait { 50% { outline-color: transparent; } }
+.md-deck-view .md-cue-edit { width: 24px; height: 24px; }
+.md-deck-view .md-cue.md-phase { padding-left: 8px; color: var(--md-text); box-shadow: inset 0 0 0 1px var(--md-muted); }
+.md-deck-view .md-cue.md-phase i { font-size: 10px; color: var(--md-accent); }
+.md-deck-view .md-cue.md-phase:disabled { opacity: .45; cursor: default; background: transparent; }
+#playlists-popout.md-deck-view .md-cue { min-height: 28px; font-size: var(--md-fs-meta); }
+#playlists-popout.md-deck-view .md-cue-name { max-width: 14em; }
+
+/* Library: the cue count on a track, and its cues as sub-rows indented to the name column (DESIGN.md "Reserved"). */
+.md-deck-view .md-cue-badge { display: inline-flex; align-items: center; gap: 4px; margin: 0 6px 0 0; padding: 0 6px; min-height: 18px; height: auto; width: auto; border: none; border-radius: 4px; background: transparent; box-shadow: inset 0 0 0 1px var(--md-line); font-size: var(--md-fs-label); font-weight: 600; line-height: 16px; color: var(--md-text-2); cursor: pointer; vertical-align: 1px; }
+.md-deck-view .md-cue-badge:hover, .md-deck-view .md-cue-badge.on { color: var(--md-text); box-shadow: inset 0 0 0 1px var(--md-muted); }
+.md-deck-view .md-cue-badge .md-badge-chev { font-size: 9px; transition: rotate .15s var(--md-ease); }
+.md-deck-view .md-cue-badge.on .md-badge-chev { rotate: 180deg; }
+/* The row's add chips float over its right side on hover; keep them off the badge while you're on it. */
+.md-deck-view .md-lib:has(.md-cue-badge:hover, .md-cue-badge:focus-visible) > .md-lib-add { opacity: 0; pointer-events: none; }
+.md-deck-view .md-lib.md-lib-cue { grid-template-columns: 22px minmax(0, 1fr); margin-left: 34px; padding-block: 2px; min-height: 28px; }
+.md-deck-view .md-lib-cue .md-cue-n { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 4px; background: var(--cue); color: var(--md-ink); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.md-deck-view .md-lib-cue .md-name { color: var(--md-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) {
+  .md-deck-view .md-cue.pending { animation: none !important; }
+}
+
+/* A scene's level (v2.34): one thin row under its header, shown even while folded, to mix stacked scenes. */
+.md-deck-view .md-scene-level { display: grid; grid-template-columns: auto minmax(0, 1fr) 36px; gap: 8px; align-items: center; padding: 0 8px 6px 28px; }
+.md-deck-view .md-scene-level-name { color: var(--md-muted); font-size: 11px; }
+.md-deck-view .md-scene-level-pct { color: var(--md-text-2); font-size: 11px; text-align: right; font-variant-numeric: tabular-nums; }
+.music-deck-tab.md-deck-view .md-scene-level input[type=range] { --md-fill: 0%; --range-track-color: linear-gradient(90deg, var(--md-muted), var(--md-muted) var(--md-fill), var(--md-line) var(--md-fill)); }
+.music-deck-tab.md-deck-view .md-scene-group.on .md-scene-level input[type=range] { --range-track-color: linear-gradient(90deg, var(--md-amb), var(--md-amb) var(--md-fill), var(--md-line) var(--md-fill)); }

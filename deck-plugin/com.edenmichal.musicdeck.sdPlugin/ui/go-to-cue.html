@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Go to Cue</title>
+    <script src="sdpi-components.js"></script>
+  </head>
+  <body>
+    <sdpi-item label="Action">
+      <sdpi-select setting="mode" default="cue">
+        <option value="cue">Go to a cue</option>
+        <option value="next">Next cue</option>
+        <option value="prev">Previous cue</option>
+      </sdpi-select>
+    </sdpi-item>
+    <sdpi-item label="Cue">
+      <sdpi-textfield setting="cue" placeholder="3, or Phase 2"></sdpi-textfield>
+    </sdpi-item>
+    <sdpi-item label="Deck">
+      <sdpi-select setting="deck" default="">
+        <option value="">The deck you're hearing</option>
+        <option value="A">Deck A</option>
+        <option value="B">Deck B</option>
+      </sdpi-select>
+    </sdpi-item>
+    <sdpi-item>
+      <p style="margin: 0; opacity: 0.7; font-size: 11px;">Type a pad number (1–8, the numbers in Foundry's track editor) or a cue name. A name works on every track that has a cue called that, so one “Phase 2” key does every boss. Press: switch at the end of the loop (or as set in Foundry). Hold: switch now, with a short crossfade. The key lights while you hear its cue and blinks while the switch waits. “Cue” is ignored for Next and Previous.</p>
+    </sdpi-item>
+  </body>
+</html>

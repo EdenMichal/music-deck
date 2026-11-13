@@ -1,0 +1,24 @@
+{
+  "name": "@music-deck/deck-plugin",
+  "private": true,
+  "type": "module",
+  "description": "Stream Deck+ plugin for Music Deck.",
+  "dependencies": {
+    "@elgato/streamdeck": "^3.0.4",
+    "@music-deck/shared": "*",
+    "ws": "^8.22.1"
+  },
+  "devDependencies": {
+    "@elgato/cli": "^1.10.4",
+    "@types/node": "^22.20.5",
+    "@types/ws": "^8.18.2"
+  },
+  "scripts": {
+    "build": "esbuild src/plugin.ts --bundle --platform=node --format=esm --target=node24 --outfile=com.edenmichal.musicdeck.sdPlugin/bin/plugin.js --external:bufferutil --external:utf-8-validate --banner:js=\"import{createRequire}from'node:module';const require=createRequire(import.meta.url);\"",
+    "test": "vitest run",
+    "validate": "streamdeck validate com.edenmichal.musicdeck.sdPlugin",
+    "install-local": "rsync -a --delete --exclude logs com.edenmichal.musicdeck.sdPlugin/ \"$HOME/Library/Application Support/com.elgato.StreamDeck/Plugins/com.edenmichal.musicdeck.sdPlugin/\" && (pkill -f com.edenmichal.musicdeck.sdPlugin/bin/plugin.js || true)",
+    "restart": "streamdeck restart com.edenmichal.musicdeck",
+    "pack": "streamdeck pack com.edenmichal.musicdeck.sdPlugin --output dist --force"
+  }
+}

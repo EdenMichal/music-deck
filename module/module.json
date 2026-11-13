@@ -1,0 +1,28 @@
+{
+  "id": "music-deck",
+  "title": "Music Deck",
+  "description": "Two music decks with a crossfader, ambient layers and sound scenes, SFX pads and combat music for Foundry VTT, played from a redesigned Playlists tab or an Elgato Stream Deck+.",
+  "version": "1.0.0",
+  "url": "https://github.com/EdenMichal/music-deck",
+  "manifest": "https://github.com/EdenMichal/music-deck/releases/latest/download/module.json",
+  "download": "https://github.com/EdenMichal/music-deck/releases/download/v1.0.0/music-deck-v1.0.0.zip",
+  "bugs": "https://github.com/EdenMichal/music-deck/issues",
+  "license": "https://github.com/EdenMichal/music-deck/blob/main/LICENSE",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.360"
+  },
+  "authors": [
+    {
+      "name": "EdenMichal"
+    }
+  ],
+  "esmodules": [
+    "dist/main.js"
+  ],
+  "socket": true,
+  "styles": [
+    "styles/music-deck.css",
+    "styles/track-editor.css"
+  ]
+}

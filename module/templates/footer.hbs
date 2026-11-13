@@ -1,0 +1,13 @@
+<footer class="md-foot">
+  {{#if history}}
+  <div class="md-undo" role="group" aria-label="Undo and redo">
+    <span class="md-undo-what" aria-live="polite" data-tooltip="{{lastLabel}}">{{lastLabel}}</span>
+    <button type="button" class="md-chip md-undo-btn" data-action="mdUndo" {{#unless undoLabel}}disabled{{/unless}} data-tooltip="{{#if undoLabel}}Undo: {{undoLabel}} (⌘Z){{else}}Nothing to undo{{/if}}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Undo</button>
+    <button type="button" class="md-icon md-redo-btn" data-action="mdRedo" {{#unless redoLabel}}disabled{{/unless}} data-tooltip="{{#if redoLabel}}Redo: {{redoLabel}} (⇧⌘Z){{else}}Nothing to redo{{/if}}" aria-label="Redo"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i></button>
+  </div>
+  {{/if}}
+  <div class="md-foot-links">
+    <button type="button" class="md-link" data-action="mdClassic"><i class="fa-solid fa-list"></i> Classic playlists view</button>
+    {{#unless popout}}<button type="button" class="md-link" data-action="mdPopout">Open big mixer <i class="fa-solid fa-up-right-from-square"></i></button>{{/unless}}
+  </div>
+</footer>

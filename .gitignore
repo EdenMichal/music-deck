@@ -1,0 +1,16 @@
+node_modules/
+module/dist/
+deck-plugin/*.sdPlugin/bin/plugin.js*
+deck-plugin/*.sdPlugin/logs/
+deck-plugin/dist/
+*.streamDeckPlugin
+*.zip
+.DS_Store
+.claude/
+
+# Internal planning docs (kept locally, not published)
+HANDOFF.md
+PLAN.md
+PRODUCT.md
+docs/superpowers/
+reference/

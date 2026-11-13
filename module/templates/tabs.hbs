@@ -1,0 +1,5 @@
+<nav class="md-tabs {{#if folded}}is-folded{{/if}}" aria-label="Music Deck views">
+  {{#each views}}<button type="button" class="{{#if active}}on{{/if}}" data-action="mdView" data-view="{{id}}" aria-pressed="{{#if active}}true{{else}}false{{/if}}"><i class="fa-solid {{icon}}" aria-hidden="true"></i> {{label}}</button>{{/each}}
+  <button type="button" class="md-tabs-fold" data-action="mdFold" data-fold="view" aria-expanded="{{#if folded}}false{{else}}true{{/if}}"
+    data-tooltip="{{#if folded}}Show the list{{else}}Hide the list{{/if}}" aria-label="{{#if folded}}Show the list{{else}}Hide the list{{/if}}"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></button>
+</nav>

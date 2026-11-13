@@ -1,0 +1,17 @@
+{
+  "name": "@music-deck/module",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --format=esm --target=es2022 --sourcemap --outfile=dist/main.js",
+    "watch": "npm run build -- --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@music-deck/shared": "*"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "vitest": "^5.1.0"
+  }
+}

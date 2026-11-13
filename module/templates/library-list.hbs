@@ -1,0 +1,53 @@
+<ol class="md-view md-lib-list" {{#if hidden}}hidden{{/if}}>
+  {{#each folders}}
+  <li class="md-lib-folder" data-node="{{id}}">
+    <button type="button" class="md-lib-open" data-action="mdOpen" data-tooltip="Open">
+      <i class="fa-solid {{#if playlist}}fa-music{{else}}fa-folder{{/if}}" aria-hidden="true"></i>
+      <span class="md-name">{{name}}</span>{{#if battle}}<span class="md-battle" data-tooltip="Battle music"><i class="fa-solid fa-swords" aria-hidden="true"></i><span class="md-sr">Battle music</span></span>{{/if}}{{#if general}}<span class="md-general-src" data-tooltip="General ambience: every sound here is a General layer"><i class="fa-solid fa-cloud-rain" aria-hidden="true"></i><span class="md-sr">General ambience</span></span>{{/if}}
+      <span class="md-meta">{{count}}</span>
+    </button>
+    <span class="md-lib-add">
+      <button type="button" class="md-chip md-chip-a" data-action="mdAddAll" data-deck="A" data-tooltip="Add all {{count}} to Deck A">＋A all</button>
+      <button type="button" class="md-chip md-chip-b" data-action="mdAddAll" data-deck="B" data-tooltip="Add all {{count}} to Deck B">＋B all</button>
+      <button type="button" class="md-chip md-chip-sfx" data-action="mdRandomPad" data-tooltip="Make an SFX pad that plays one of these {{count}} at random">＋SFX <i class="fa-solid fa-dice" aria-hidden="true"></i><span class="md-sr">random pad</span></button>
+    </span>
+  </li>
+  {{/each}}
+  {{#each rows}}
+  <li class="md-lib" data-path="{{path}}" data-name="{{name}}">
+    <button type="button" class="md-icon md-ear {{#if previewing}}on{{/if}}" data-action="mdPreview"
+      data-tooltip="{{#if previewing}}Stop preview{{else}}Preview (only you hear it){{/if}}"
+      aria-label="{{#if previewing}}Stop preview of {{name}}{{else}}Preview {{name}} (only you hear it){{/if}}" aria-pressed="{{#if previewing}}true{{else}}false{{/if}}">
+      <i class="fa-solid {{#if previewing}}fa-stop{{else}}fa-headphones{{/if}}"></i>
+    </button>
+    <div class="md-lib-info">
+      <div class="md-name" data-tooltip="{{name}}">{{name}}</div>
+      <div class="md-meta">{{#if cueCount}}<button type="button" class="md-cue-badge {{#if open}}on{{/if}}" data-action="mdLibCues" aria-expanded="{{#if open}}true{{else}}false{{/if}}"
+          data-tooltip="{{#if open}}Hide its cues{{else}}Show its {{cueCount}} cues{{/if}}"><i class="fa-solid fa-chevron-down md-badge-chev" aria-hidden="true"></i> {{cueCount}} cues</button>{{/if}}{{#if where}}{{where}} · {{/if}}<span class="md-dur">{{duration}}</span></div>
+    </div>
+    <span class="md-lib-add">
+      <button type="button" class="md-chip md-chip-a" data-action="mdLibAdd" data-channel="A" data-tooltip="Add to Deck A">＋A</button>
+      <button type="button" class="md-chip md-chip-b" data-action="mdLibAdd" data-channel="B" data-tooltip="Add to Deck B">＋B</button>
+      <button type="button" class="md-chip md-chip-amb" data-action="mdLibAdd" data-channel="ambient" data-tooltip="Add as an ambient layer {{ambTo}}">＋Amb</button>
+      <button type="button" class="md-chip md-chip-sfx" data-action="mdLibAdd" data-channel="sfx" data-tooltip="Add as an SFX pad">＋SFX</button>
+      <button type="button" class="md-chip md-chip-combat" data-action="mdLibAdd" data-channel="combat" data-tooltip="Add to the battle music (Music Deck – Combat)" aria-label="Add {{name}} to the battle music">＋<i class="fa-solid fa-swords" aria-hidden="true"></i></button>
+      <button type="button" class="md-chip md-chip-x" data-action="mdEditCues" data-tooltip="Edit cues" aria-label="Edit cues of {{name}}"><i class="fa-solid fa-scissors"></i></button>
+    </span>
+  </li>
+  {{#each cueRows}}
+  <li class="md-lib md-lib-cue" data-path="{{../path}}" data-name="{{../name}}" data-cue="{{id}}">
+    <span class="md-cue-n" style="--cue: {{color}}" aria-hidden="true">{{n}}</span>
+    <div class="md-lib-info"><div class="md-name" data-tooltip="{{name}}{{#if once}} (plays once){{/if}}">{{name}}</div></div>
+    <span class="md-lib-add">
+      <button type="button" class="md-chip md-chip-a" data-action="mdLibAddCue" data-channel="A" data-tooltip="Add to Deck A, starting on {{name}}">＋A</button>
+      <button type="button" class="md-chip md-chip-b" data-action="mdLibAddCue" data-channel="B" data-tooltip="Add to Deck B, starting on {{name}}">＋B</button>
+      <button type="button" class="md-chip md-chip-amb" data-action="mdLibAddCue" data-channel="ambient" data-tooltip="Add {{name}} as an ambient layer {{ambTo}}{{#if once}} (it plays once){{else}}, looping{{/if}}">＋Amb</button>
+      {{#if once}}<button type="button" class="md-chip md-chip-sfx" data-action="mdLibAddCue" data-channel="sfx" data-tooltip="Add {{name}} as an SFX pad">＋SFX</button>{{/if}}
+    </span>
+  </li>
+  {{/each}}
+  {{/each}}
+  {{#if more}}<li class="md-empty">{{more}} more. Narrow your search.</li>{{/if}}
+  {{#if empty}}<li class="md-empty">{{#if emptyFiles}}No music yet. Put audio files in <code>Data/music/</code>, then press Rescan.{{else}}No playlists of your own yet. Make them in the Classic playlists view, or switch to Files.{{/if}}</li>{{/if}}
+  {{#if noMatch}}<li class="md-empty">No tracks match.</li>{{/if}}
+</ol>

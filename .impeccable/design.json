@@ -1,0 +1,190 @@
+{
+ "schemaVersion": 2,
+ "generatedAt": "2026-11-08T21:26:16.301239+00:00",
+ "title": "Design System: Music Deck",
+ "extensions": {
+  "colorMeta": {
+   "booth-amber": {
+    "role": "primary",
+    "displayName": "Booth Amber"
+   },
+   "deck-a-blue": {
+    "role": "secondary",
+    "displayName": "Deck A Blue"
+   },
+   "deck-b-violet": {
+    "role": "secondary",
+    "displayName": "Deck B Violet"
+   },
+   "ambient-green": {
+    "role": "secondary",
+    "displayName": "Ambient Green"
+   },
+   "sfx-coral": {
+    "role": "secondary",
+    "displayName": "SFX Coral"
+   },
+   "table-rose": {
+    "role": "tertiary",
+    "displayName": "Table Rose"
+   },
+   "online-teal": {
+    "role": "tertiary",
+    "displayName": "Online Teal"
+   },
+   "panic-red": {
+    "role": "tertiary",
+    "displayName": "Panic Red"
+   },
+   "booth-black": {
+    "role": "neutral",
+    "displayName": "Booth Black"
+   },
+   "console-panel": {
+    "role": "neutral",
+    "displayName": "Console Panel"
+   },
+   "seam": {
+    "role": "neutral",
+    "displayName": "Seam"
+   },
+   "lamp-white": {
+    "role": "neutral",
+    "displayName": "Lamp White"
+   },
+   "readout-grey": {
+    "role": "neutral",
+    "displayName": "Readout Grey"
+   },
+   "chrome-grey": {
+    "role": "neutral",
+    "displayName": "Chrome Grey"
+   },
+   "ink-on-colour": {
+    "role": "neutral",
+    "displayName": "Ink on Colour"
+   }
+  },
+  "typographyMeta": {
+   "deck-letter": {
+    "displayName": "Deck letter",
+    "purpose": "The A and B tiles."
+   },
+   "title": {
+    "displayName": "Title",
+    "purpose": "Track on each deck."
+   },
+   "body": {
+    "displayName": "Body",
+    "purpose": "Rows, tabs, names."
+   },
+   "readout": {
+    "displayName": "Readout",
+    "purpose": "Live times, percents, counts; tabular."
+   },
+   "meta": {
+    "displayName": "Meta",
+    "purpose": "Secondary row info and dialog hints."
+   },
+   "label": {
+    "displayName": "Label",
+    "purpose": "Chips and short button labels only."
+   }
+  },
+  "shadows": [
+   {
+    "name": "banner-float",
+    "value": "0 4px 16px rgba(0, 0, 0, .45)",
+    "purpose": "Players' sound banner only."
+   }
+  ],
+  "motion": [
+   {
+    "name": "state",
+    "value": "150ms ease",
+    "purpose": "Toggles, presence dimming, hovers."
+   },
+   {
+    "name": "progress",
+    "value": "900ms linear",
+    "purpose": "Deck progress bar between ticks."
+   },
+   {
+    "name": "pending-pulse",
+    "value": "1.6s ease-in-out infinite",
+    "purpose": "Pending and armed states only; off under prefers-reduced-motion."
+   }
+  ],
+  "breakpoints": [
+   {
+    "name": "sidebar",
+    "value": "~300px"
+   },
+   {
+    "name": "big-mixer",
+    "value": "440px"
+   }
+  ]
+ },
+ "components": [
+  {
+   "name": "Deck card",
+   "kind": "custom",
+   "refersTo": "deck-card",
+   "description": "What's on a deck: letter tile, title, readout, progress.",
+   "html": "<div class=\"ds-deck\"><span class=\"ds-tag\">A</span><div><div class=\"ds-title\">Tavern at Dusk</div><div class=\"ds-status\">1:24 / 3:02</div><div class=\"ds-bar\"><i></i></div></div></div>",
+   "css": ".ds-deck{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:center;padding:8px;border-radius:8px;background:#272830;color:#e8e6e3;width:260px}.ds-tag{width:26px;height:26px;border-radius:5px;display:grid;place-items:center;font-weight:800;font-size:14px;background:#6fb1e8;color:#111318}.ds-title{font-weight:600;font-size:14px}.ds-status{font-size:13px;font-weight:500;color:#c4c2cc;font-variant-numeric:tabular-nums}.ds-bar{height:3px;background:#3a3b46;border-radius:2px;margin-top:4px}.ds-bar i{display:block;height:100%;width:45%;background:#6fb1e8}"
+  },
+  {
+   "name": "Fade button",
+   "kind": "button",
+   "refersTo": "button-fade",
+   "description": "The crossfade action.",
+   "html": "<button class=\"ds-fade\">⇄ Fade</button>",
+   "css": ".ds-fade{background:#e0a65a;color:#111318;border:none;border-radius:6px;font-weight:700;font-size:11px;padding:4px 10px;cursor:pointer}.ds-fade:hover{filter:brightness(1.1)}.ds-fade:focus-visible{outline:2px solid #e0a65a;outline-offset:2px}"
+  },
+  {
+   "name": "Panic",
+   "kind": "button",
+   "refersTo": "button-panic",
+   "description": "Fade every sound to silence.",
+   "html": "<button class=\"ds-panic\">⏻ Fade all</button>",
+   "css": ".ds-panic{background:transparent;border:1px solid #f5625f;color:#f5625f;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;cursor:pointer}.ds-panic:hover{background:#f5625f;color:#111318}.ds-panic:focus-visible{outline:2px solid #e0a65a;outline-offset:1px}"
+  },
+  {
+   "name": "SFX pad",
+   "kind": "custom",
+   "refersTo": "sfx-pad",
+   "description": "A hot-cue pad with a lit edge.",
+   "html": "<button class=\"ds-pad\">Thunder<small>no key yet</small></button>",
+   "css": ".ds-pad{width:90px;aspect-ratio:1;border:none;border-top:3px solid #e8846f;border-radius:8px;background:#272830;color:#e8e6e3;font-weight:600;font-size:12px;cursor:pointer}.ds-pad small{display:block;font-weight:400;color:#a3a1ad;font-size:11px}.ds-pad:hover{background:#3a3b46}.ds-pad:active{transform:scale(.96)}"
+  },
+  {
+   "name": "Channel chip",
+   "kind": "chip",
+   "refersTo": "chip",
+   "description": "Add to a channel; letter plus colour.",
+   "html": "<button class=\"ds-chip ds-a\">＋A</button> <button class=\"ds-chip ds-b\">＋B</button>",
+   "css": ".ds-chip{border:none;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:600;color:#e8e6e3;cursor:pointer}.ds-a{background:rgba(111,177,232,.28)}.ds-b{background:rgba(197,139,232,.28)}.ds-chip:hover{filter:brightness(1.25)}"
+  },
+  {
+   "name": "Search",
+   "kind": "input",
+   "refersTo": "input-search",
+   "description": "Library search.",
+   "html": "<input class=\"ds-search\" placeholder=\"Search 240 tracks here…\">",
+   "css": ".ds-search{background:#272830;border:1px solid #3a3b46;color:#e8e6e3;border-radius:6px;padding:6px 9px;height:30px;width:240px}.ds-search:focus-visible{outline:2px solid #e0a65a;outline-offset:1px}"
+  },
+  {
+   "name": "Tabs",
+   "kind": "nav",
+   "refersTo": "tab",
+   "description": "Music / Ambient / SFX / Library.",
+   "html": "<nav class=\"ds-tabs\"><button class=\"on\">Music</button><button>Ambient</button><button>SFX</button><button>Library</button></nav>",
+   "css": ".ds-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #3a3b46;background:#1f2026;width:300px}.ds-tabs button{background:none;border:none;color:#a3a1ad;padding:9px 0;border-bottom:2px solid transparent;cursor:pointer}.ds-tabs button.on{color:#e8e6e3;border-bottom-color:#e0a65a}.ds-tabs button:hover{color:#e8e6e3}"
+  }
+ ],
+ "narrative": {
+  "northStar": "The Booth at Night"
+ }
+}

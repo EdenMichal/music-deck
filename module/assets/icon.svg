@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Music Deck">
+<rect width="512" height="512" rx="114" fill="#122C64"/>
+  <g transform="translate(-9 -20)">
+    <polygon points="214,168 418,132 418,188 214,224" fill="#F6E9CF"/>
+    <rect x="214" y="200" width="28" height="152" fill="#F6E9CF"/>
+    <rect x="390" y="164" width="28" height="152" fill="#F6E9CF"/>
+    <circle cx="176" cy="352" r="66" fill="#F6E9CF"/>
+    <circle cx="352" cy="316" r="66" fill="#F6E9CF"/>
+    <circle cx="176" cy="352" r="21" fill="#122C64"/>
+    <circle cx="352" cy="316" r="21" fill="#122C64"/>
+    <rect x="297" y="122" width="42" height="100" rx="12" fill="#D19F44" stroke="#122C64" stroke-width="12" paint-order="stroke" transform="rotate(-10 318 172)"/>
+  </g>
+</svg>

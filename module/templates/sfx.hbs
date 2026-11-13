@@ -1,0 +1,11 @@
+<section class="md-view md-sfx" data-channel="sfx" {{#if hidden}}hidden{{/if}}>
+  <div class="md-pads">
+    {{#each pads}}
+    <div class="md-pad-wrap" data-sound-id="{{id}}">
+      <button type="button" class="md-pad {{#if playing}}playing{{/if}}" data-action="mdPad" aria-pressed="{{#if playing}}true{{else}}false{{/if}}"><span class="md-pad-name">{{name}}</span><small>{{#if random}}<i class="fa-solid fa-dice" aria-hidden="true"></i> {{random}} sounds, at random{{else}}no key yet{{/if}}</small></button>
+      <button type="button" class="md-chip md-chip-x" data-action="mdRemoveSound" data-tooltip="Remove pad" aria-label="Remove pad {{name}}"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    {{/each}}
+    <button type="button" class="md-pad md-pad-add" data-action="mdGoLibrary"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add</button>
+  </div>
+</section>

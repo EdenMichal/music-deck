@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Check module.json against the tag
+        id: version
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(jq -r .version module/module.json)"
+          if [ "$version" != "$tag" ]; then
+            echo "::error file=module/module.json::version is \"$version\" but the tag is $GITHUB_REF_NAME (expected \"$tag\")"
+            exit 1
+          fi
+          download="$(jq -r .download module/module.json)"
+          case "$download" in
+            */releases/download/v$version/music-deck-v$version.zip) ;;
+            *) echo "::error file=module/module.json::download is \"$download\"; it must end with /releases/download/v$version/music-deck-v$version.zip"; exit 1 ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Build the module zip
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          cp LICENSE README.md module/
+          cd module
+          files=(module.json LICENSE README.md dist styles templates assets)
+          # Everything module.json loads must exist and be inside the zip.
+          missing=0
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            if [ ! -e "$path" ]; then echo "::error file=module/module.json::$path is listed but missing"; missing=1; continue; fi
+            inside=0
+            for f in "${files[@]}"; do case "$path" in "$f"|"$f"/*) inside=1 ;; esac; done
+            if [ "$inside" = 0 ]; then echo "::error file=module/module.json::$path is listed but not packed"; missing=1; fi
+          done < <(jq -r '(.esmodules // [])[], (.scripts // [])[], (.styles // [])[], (.languages // [])[].path, (.packs // [])[].path' module.json)
+          [ "$missing" = 0 ]
+          zip -r -X -q "../music-deck-v$VERSION.zip" "${files[@]}" -x '*.DS_Store'
+          cd ..
+          unzip -l "music-deck-v$VERSION.zip"
+
+      - name: Pack the Stream Deck plugin
+        run: npm run pack -w deck-plugin
+
+      - name: Publish the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Music Deck ${{ steps.version.outputs.version }}
+          files: |
+            music-deck-v${{ steps.version.outputs.version }}.zip
+            module/module.json
+            deck-plugin/dist/com.edenmichal.musicdeck.streamDeckPlugin
+          fail_on_unmatched_files: true
