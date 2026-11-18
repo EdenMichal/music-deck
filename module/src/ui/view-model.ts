@@ -244,7 +244,9 @@ export function battleContext() {
       : combatBattle() ? "Combat · A and B resume after" : "On · A and B resume after",
     rows: queueOf(p).map((s: any, i: number) => ({
       id: s.id, n: i + 1, name: s.name, playing: !!s.playing, current: s.id === current?.id, duration: formatTime(durationOf(s)),
+      next: s.id === current?.id && !s.playing && !s.pausedTime,
     })),
+    modes: deckModes("battle"),
   };
 }
 
@@ -273,7 +275,7 @@ export function musicContext(state: UiState) {
 }
 
 /** The queue's three toggles: Shuffle and Repeat one are play modes (one at a time); Repeat is the end mode. */
-function deckModes(deck: DeckId) {
+function deckModes(deck: PlayDeck) {
   const play = playModeOf(deck);
   const loop = endModeOf(deck) === "loop";
   return [

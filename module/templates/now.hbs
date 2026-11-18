@@ -135,11 +135,16 @@
           <input type="range" min="0" max="100" value="{{battle.vol}}" data-slider="battleVol" aria-label="Battle deck volume">
           <span class="md-pct" data-label="battleVol">{{battle.vol}}%</span>
         </div>
-        <ol class="md-bdeck-queue" data-deck="battle" aria-label="Battle deck queue">
+        <div class="md-mode" data-deck="battle" role="group" aria-label="Battle deck play mode">
+          {{#each battle.modes}}<button type="button" class="md-pm {{#if on}}on{{/if}}" data-action="mdDeckMode" data-mode="{{mode}}" aria-pressed="{{#if on}}true{{else}}false{{/if}}" data-tooltip="{{tip}}">
+            <span class="md-pm-icon" aria-hidden="true"><i class="fa-solid {{icon}}"></i>{{#if one}}<b>1</b>{{/if}}</span>{{label}}</button>{{/each}}
+        </div>
+        <ol class="md-queue md-bdeck-queue" data-deck="battle" aria-label="Battle deck queue">
           {{#each battle.rows}}
-          <li class="md-row {{#if current}}current{{/if}} {{#if playing}}playing{{/if}}" data-sound-id="{{id}}">
+          <li class="md-row {{#if current}}current{{/if}} {{#if playing}}playing{{/if}}" draggable="true" data-index="{{@index}}" data-sound-id="{{id}}">
+            <span class="md-grip" aria-hidden="true"><i class="fa-solid fa-grip-vertical"></i></span>
             <span class="md-num">{{#if playing}}<i class="fa-solid fa-volume-high" aria-label="Playing"></i>{{else}}{{n}}{{/if}}</span>
-            <span class="md-name">{{name}}</span>
+            <span class="md-name">{{name}}{{#if next}}<span class="md-next">next</span>{{/if}}</span>
             <span class="md-dur">{{duration}}</span>
             <span class="md-hover">
               <button type="button" class="md-chip" data-action="mdPlayNow">Play now</button>
@@ -148,9 +153,10 @@
             </span>
           </li>
           {{else}}
-          <li class="md-empty">No battle music yet. ▶ loads it from your battle music (Library › right-click › Use for battle music).</li>
+          <li class="md-empty">No battle music yet. Add tracks with ＋⚔ in the Library, or right-click a Library folder › Use for battle music and press ▶.</li>
           {{/each}}
         </ol>
+        <button type="button" class="md-add md-add-sm" data-action="mdGoLibrary" data-tooltip="＋⚔ on a track puts it on the Battle deck"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add tracks from Library</button>
       </div>
     </div>
   </section>

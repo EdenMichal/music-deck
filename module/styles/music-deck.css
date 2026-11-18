@@ -87,7 +87,8 @@
 .md-deck-view .md-key.b { color: var(--md-b); }
 
 /* Now playing */
-.md-deck-view .md-now { flex: none; padding: 10px; border-bottom: 1px solid var(--md-line); background: linear-gradient(180deg, var(--md-panel), var(--md-bg) 120px); }
+/* The Now block scrolls on its own once it outgrows the tab, so the list below always keeps room (min-height on .md-view). */
+.md-deck-view .md-now { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 10px; border-bottom: 1px solid var(--md-line); background: linear-gradient(180deg, var(--md-panel), var(--md-bg) 120px); }
 .md-deck-view .md-status-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
 .md-deck-view .md-panic { background: transparent; border: 1px solid var(--md-danger); color: var(--md-danger); border-radius: 6px; padding: 3px 9px; min-height: 26px; font-size: var(--md-fs-meta); font-weight: 600; cursor: pointer; width: auto; height: auto; flex: none; }
 .md-deck-view .md-panic:hover { background: rgba(245, 98, 95, .14); }
@@ -208,8 +209,8 @@
 .md-deck-view .md-tabs button i { font-size: var(--md-fs-label); }
 .md-deck-view .md-tabs button.on { color: var(--md-text); border-bottom-color: var(--md-accent); font-weight: 600; }
 .md-deck-view .md-tabs button:hover { color: var(--md-text); }
-.md-deck-view .md-view { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 10px; margin: 0; }
-.md-deck-view .md-library-head { flex: none; overflow: visible; padding-bottom: 4px; }
+.md-deck-view .md-view { flex: 1 1 0; min-height: min(200px, 35vh); overflow-y: auto; padding: 10px; margin: 0; }
+.md-deck-view .md-library-head { flex: none; min-height: 0; overflow: visible; padding-bottom: 4px; }
 
 /* Segmented controls: Deck A / Deck B queue, Playlists / Files */
 .md-deck-view .md-seg { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; background: var(--md-panel); border-radius: 6px; padding: 2px; margin-bottom: 8px; }
@@ -352,7 +353,7 @@
 .md-deck-view .md-level.md-level-battle { grid-template-columns: 76px minmax(0, 1fr) 40px; padding-right: 4px; }
 .music-deck-tab.md-deck-view .md-level-battle input[type=range] { --md-fill-from: var(--md-danger); --md-fill-to: var(--md-danger); }
 .md-deck-view .md-bdeck-queue { list-style: none; margin: 0; padding: 0; max-height: 180px; overflow-y: auto; }
-.md-deck-view .md-bdeck-queue .md-row { grid-template-columns: 20px minmax(0, 1fr) auto; cursor: default; }
+.md-deck-view .md-mode[data-deck=battle] { --md-deck: var(--md-danger); --md-deck-wash: rgba(245, 98, 95, .18); margin-bottom: 0; }
 .md-deck-view .md-bdeck-queue .md-row.playing { background: rgba(245, 98, 95, .18); }
 .md-deck-view .md-bdeck-queue .md-row.playing .md-name, .md-deck-view .md-bdeck-queue .md-row.playing .md-num { color: var(--md-danger); }
 .md-deck-view .md-bdeck-queue .md-row.playing .md-hover { background: linear-gradient(90deg, transparent, #3d2b2c 10px); }

@@ -2,13 +2,13 @@
  * The redesigned Playlists sidebar tab. GMs get the Music Deck view; players and the
  * "Classic playlists view" toggle get core's parts. "Open big mixer" is core's renderPopout().
  */
-import { DECKS, addToCombat, endModeOf, playModeOf, playlistFor, trackName } from "../channels";
+import { DECKS, endModeOf, playModeOf, playlistFor, trackName } from "../channels";
 import { LINK_HOOK, askForCode } from "../deck-client";
 import { battleGain, channelGains, deckGains, type DeckId, type PlayDeck } from "../crossfader";
 import * as decks from "../decks";
 import { followsFolder, generalSource, setGeneralSource } from "../general";
 import * as layers from "../layers";
-import { battleIsDefault, battleSource, endBattle, inBattle, reloadBattle, setBattleSource, startBattle } from "../combat";
+import { addToBattle, battleIsDefault, battleSource, endBattle, inBattle, reloadBattle, setBattleSource, startBattle } from "../combat";
 import { libraryScannedAt, loadDuration, scanLibrary, togglePreview } from "../library";
 import { defaultSource, tracksFor } from "../library-sources";
 import { MIX_HOOK, MODULE_ID, getMix } from "../live-gain";
@@ -29,7 +29,7 @@ const T = (name: string) => `modules/${MODULE_ID}/templates/${name}.hbs`;
 const CLASSIC_SETTING = "classicView";
 
 const MD_PARTS = {
-  now: { template: T("now") },
+  now: { template: T("now"), scrollable: [""] },
   tabs: { template: T("tabs") },
   music: { template: T("music"), scrollable: [""] },
   ambient: { template: T("ambient"), scrollable: [""] },
@@ -126,7 +126,7 @@ export function createTabClass(Base: any) {
         mdPopout: act((app) => app.renderPopout()),
         mdPairDeck: act(() => askForCode()),
         mdPlayMode: act((_app, t) => setPlayMode(t.dataset.mode as PlayMode)),
-        mdDeckMode: act((app, t) => toggleDeckMode(app.ui.queue, t.dataset.mode!)),
+        mdDeckMode: act((_app, t) => toggleDeckMode(deckOf(t), t.dataset.mode!)),
         mdScene: act((_app, t, e) => ((e as MouseEvent).shiftKey ? scenes.stackScene(sceneOf(t)) : scenes.toggleScene(sceneOf(t)))),
         mdSceneFold: act((app, t) => app.toggleScene(sceneOf(t))),
         mdGeneralFold: act(app => app.toggleGeneral()),
@@ -383,18 +383,21 @@ export function createTabClass(Base: any) {
 
     bindQueueDrag(el: HTMLElement) {
       const rows = [...el.querySelectorAll<HTMLElement>(".md-row[draggable]")];
+      // Each queue (Deck A/B in the Music tab, the Battle deck) reorders within itself; a drop on another list is ignored.
       for (const row of rows) {
+        const deck = deckOf(row);
         row.addEventListener("dragstart", e => {
-          e.dataTransfer!.setData("text/plain", row.dataset.index!);
+          e.dataTransfer!.setData("text/plain", `${deck}:${row.dataset.index}`);
           row.classList.add("dragging");
         });
         row.addEventListener("dragend", () => row.classList.remove("dragging"));
         row.addEventListener("dragover", e => e.preventDefault());
         row.addEventListener("drop", e => {
           e.preventDefault();
-          const from = Number(e.dataTransfer!.getData("text/plain"));
+          const [fromDeck, index] = e.dataTransfer!.getData("text/plain").split(":");
+          const from = Number(index);
           const to = Number(row.dataset.index);
-          if (Number.isFinite(from) && from !== to) decks.moveTrack(this.ui.queue, from, to);
+          if (fromDeck === deck && Number.isFinite(from) && from !== to) decks.moveTrack(deck, from, to);
         });
       }
     }
@@ -518,7 +521,7 @@ async function playNow(deck: PlayDeck, soundId: string): Promise<void> {
 }
 
 /** The queue's Shuffle, Repeat and Repeat one toggles. Shuffle and Repeat one replace each other. */
-async function toggleDeckMode(deck: DeckId, mode: string): Promise<void> {
+async function toggleDeckMode(deck: PlayDeck, mode: string): Promise<void> {
   const play = playModeOf(deck);
   if (mode === "repeat") return decks.setEndMode(deck, endModeOf(deck) === "loop" ? "stop" : "loop");
   const target = mode === "shuffle" ? "shuffle" : "repeat";
@@ -527,7 +530,12 @@ async function toggleDeckMode(deck: DeckId, mode: string): Promise<void> {
 
 async function libraryAdd(app: any, channel: string, path: string, name?: string, cue?: string): Promise<void> {
   if (channel === "combat") {
-    if (await addToCombat(path, name)) ui.notifications.info("Music Deck: added to Music Deck – Combat.");
+    const added = await addToBattle(path, name);
+    if (added === "already") ui.notifications.info("Music Deck: that track is already on the Battle deck.");
+    else if (added) {
+      ui.notifications.info(battleIsDefault() ? "Music Deck: added to the Battle deck."
+        : "Music Deck: added to the Battle deck. Your battle music is another folder, so the next shuffle drops it.");
+    }
     return;
   }
   if (channel === "A" || channel === "B") await decks.addTrack(channel, path, { name, cue });

@@ -12,7 +12,7 @@
  *
  * The run (which A/B tracks to resume) is a flag on the Battle deck's playlist, so a reload mid-combat keeps it.
  */
-import { combatPlaylist, playlistFor, queueOf } from "./channels";
+import { addToCombat, combatPlaylist, playlistFor, queueOf } from "./channels";
 import { battleOrder, recovery, toResume } from "./combat-pick";
 import type { DeckId, PlayDeck } from "./crossfader";
 import * as decks from "./decks";
@@ -101,6 +101,25 @@ async function loadBattleTracks(): Promise<string | undefined> {
   await p.updateEmbeddedDocuments("PlaylistSound", sortUpdates(created.map((c: any) => c.id)), { render: false });
   lastStart = order[0];
   return created[0]?.id;
+}
+
+/**
+ * ＋⚔ in the Library: the track joins the Music Deck – Combat playlist and goes straight onto the Battle deck's
+ * queue, so it shows there now rather than after the next shuffle. An empty Battle deck gets the whole shuffle
+ * first, or the next battle would play only this track. "already" when it was on the Battle deck before.
+ */
+export async function addToBattle(path: string, name?: string): Promise<"added" | "already" | null> {
+  if (!(await addToCombat(path, name))) return null;
+  const p = playlistFor("battle");
+  if (!p) return null;
+  const onDeck = () => p.sounds.some((s: any) => s.path === path);
+  if (onDeck()) return "already";
+  if (!p.sounds.size && tracksFor(battleSource()).length) await loadBattleTracks();
+  if (!onDeck()) {
+    const plan = combatPlan(getSheet(path));
+    await decks.addTrack("battle", path, { name, cue: plan?.start.id, chain: plan?.chain });
+  }
+  return "added";
 }
 
 function warnNoMusic(): void {
@@ -236,7 +255,10 @@ export async function onBattleTrackEnd(playlist: any, sound: any): Promise<boole
   if (playlist !== playlistFor("battle")) return false;
   if (ending) { await fadeBack(); return true; }
   if (!runOf()) return true;
-  const next = afterEnd(queueOf(playlist).map((s: any) => s.id), sound.id, "loop");
+  // Shuffle and Repeat work as on A and B: the next track is Foundry's play order (shuffled or the queue's), and
+  // with Repeat off the deck stops after the last track, cued on the first. Repeat one never gets here: it loops.
+  if (await decks.onDeckTrackEnd(playlist, sound)) return true;
+  const next = afterEnd(playlist.playbackOrder ?? queueOf(playlist).map((s: any) => s.id), sound.id, "loop");
   if (next) await decks.playTrack("battle", next);
   return true;
 }

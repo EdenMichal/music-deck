@@ -260,7 +260,7 @@ export async function setEndMode(deck: PlayDeck, end: EndMode): Promise<void> {
  * Returns true if we handled it: "stop" mode stops after the last track and cues the first.
  */
 export async function onDeckTrackEnd(playlist: any, sound: any): Promise<boolean> {
-  const deck = DECKS.find(d => playlistFor(d) === playlist);
+  const deck = ([...DECKS, "battle"] as PlayDeck[]).find(d => playlistFor(d) === playlist);
   if (!deck || endModeOf(deck) !== "stop") return false;
   if (afterEnd(playlist.playbackOrder, sound.id, "stop") !== null) return false;
   await rewind(playlist);
