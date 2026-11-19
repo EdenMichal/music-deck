@@ -2,6 +2,12 @@
 
 Two music decks with a crossfader, an ambient channel and sound effects for Foundry VTT v14, played from a redesigned Playlists tab or an Elgato Stream Deck+. Everyone in the game hears the same mix, including remote players.
 
+## Screenshots
+
+| Music: Deck A, Deck B and the Battle deck | Ambient layers and sound scenes | Library |
+| :---: | :---: | :---: |
+| <img src="screenshots/music.png" alt="The Music tab: two decks with a crossfader, the Battle deck and Deck B's queue" width="250"> | <img src="screenshots/ambient-scenes.png" alt="The Ambient tab: sound scenes with their layers and levels" width="250"> | <img src="screenshots/library.png" alt="The Library tab: Foundry's playlists and folders" width="250"> |
+
 ## What you need
 
 - **Foundry VTT v14.**
