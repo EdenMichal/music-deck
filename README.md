@@ -217,6 +217,11 @@ npm run typecheck
 
 Bump `version` and the `download` URL in `module/module.json`. When `DECK_PROTOCOL` in `shared/protocol.ts` changes, also bump the plugin's `Version` in its `manifest.json` (the Stream Deck app won't reinstall a plugin with the same version). Then push a tag such as `v1.0.1`. The Release workflow builds the module zip and the `.streamDeckPlugin` and attaches both, with `module.json`, to a GitHub release.
 
+## More modules
+
+- **[Encounter Deck](https://github.com/EdenMichal/encounter-deck)**: encounter prep by campaign for D&D 5e, run as real combat with the tokens kept off the map, and a carousel of the fight for the whole table.
+- **[Mobile Deck](https://github.com/EdenMichal/mobile-deck)**: a phone and tablet interface for Foundry (D&D5e and PF2e), with a Character Builder and party inventory.
+
 ## License
 
 [MIT](LICENSE).
