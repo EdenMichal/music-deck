@@ -200,34 +200,6 @@ This part is optional, for a GM who also runs [Pocket Bard](https://pocketbard.a
 | Remote players hear the music twice | Take Foundry and the browser out of Wave Link's Stream Mix. |
 | A track stutters for remote players | Very large WAV files load slowly over the internet. Convert them to MP3 or OGG. |
 
-## Development
-
-```bash
-npm install
-```
-
-```bash
-npm run build
-```
-
-```bash
-npm test
-```
-
-```bash
-npm run typecheck
-```
-
-- `npm run watch` rebuilds the module on save. Reload Foundry to pick up the change.
-- `npm run install-local -w deck-plugin` copies the built plugin into the Stream Deck app and restarts it. Run it after each plugin rebuild. It works on macOS only.
-- `npm run pack -w deck-plugin` builds the installer in `deck-plugin/dist/`.
-- To try the module from a checkout, link `module/` into Foundry's data folder as `Data/modules/music-deck` and run `npm run build`.
-- `node tools/render-icons.mjs` renders the plugin icons from `module/assets/icon.svg`. It needs Playwright.
-
-### Releasing
-
-Bump `version` and the `download` URL in `module/module.json`. When `DECK_PROTOCOL` in `shared/protocol.ts` changes, also bump the plugin's `Version` in its `manifest.json`, because the Stream Deck app won't reinstall a plugin with the same version. Then push a tag such as `v1.0.1`. The Release workflow builds the module zip and the `.streamDeckPlugin` and attaches both, with `module.json`, to a GitHub release.
-
 ## More modules
 
 - **[Encounter Deck](https://github.com/EdenMichal/encounter-deck).** Encounter prep by campaign for D&D 5e. Fights run as real Foundry combat with the monster tokens kept off the map, and a carousel shows the whole table whose turn it is.
