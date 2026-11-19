@@ -219,8 +219,8 @@ Bump `version` and the `download` URL in `module/module.json`. When `DECK_PROTOC
 
 ## More modules
 
-- **[Encounter Deck](https://github.com/EdenMichal/encounter-deck)**: encounter prep by campaign for D&D 5e, run as real combat with the tokens kept off the map, and a carousel of the fight for the whole table.
-- **[Mobile Deck](https://github.com/EdenMichal/mobile-deck)**: a phone and tablet interface for Foundry (D&D5e and PF2e), with a Character Builder and party inventory.
+- **[Encounter Deck](https://github.com/EdenMichal/encounter-deck).** Encounter prep by campaign for D&D 5e. Fights run as real Foundry combat with the monster tokens kept off the map, and a carousel shows the whole table whose turn it is.
+- **[Mobile Deck](https://github.com/EdenMichal/mobile-deck).** A phone and tablet interface for Foundry (D&D5e and PF2e), with a Character Builder and party inventory.
 
 ## License
 
